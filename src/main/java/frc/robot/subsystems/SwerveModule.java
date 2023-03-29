@@ -140,23 +140,12 @@ public class SwerveModule extends SubsystemBase {
     return new SwerveModulePosition(distance, rot);
   }
 
-  // unwraps a target angle to be [0,2π]
-  public static double placeInAppropriate0To360Scope(double unwrappedAngle) {
 
-    double modAngle = unwrappedAngle % (2.0 * Math.PI);
-
-    if (modAngle < 0.0)
-      modAngle += 2.0 * Math.PI;
-
-    double wrappedAngle = modAngle;
-
-    return wrappedAngle;
-
-  }
-
-  // initialize the integrated NEO encoder to the offset (relative to home
-  // position)
-  // measured by the CANCoder
+  /**
+   * Initialize the integrated NEO encoder to the offset (relative to home
+   * position)
+   * measured by the CANCoder
+   */
   public void initRotationOffset() {
 
     rotationEncoder.setPosition(Units.degreesToRadians(canCoder.getAbsolutePosition() - canCoderOffsetDegrees));
