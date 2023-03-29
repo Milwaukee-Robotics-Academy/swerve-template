@@ -6,7 +6,6 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Swerve;
@@ -34,28 +33,28 @@ public class Drive extends CommandBase {
         this.m_speedReduction = speedReduction;
     }
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
         desiredHeading = s_Swerve.getYaw().getDegrees();
         driftCorrectionPID.enableContinuousInput(-180, 180);
-        driftCorrectionPID.setTolerance(10,10);
+        driftCorrectionPID.setTolerance(10, 10);
     }
 
     @Override
     public void execute() {
         /* Get Values, Deadband */
         /* Sup stands for suppliers, Val stands value, */
-        double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
-        double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
-        double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
+        double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.Controls.AXIS_DEADZONE);
+        double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.Controls.AXIS_DEADZONE);
+        double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.Controls.AXIS_DEADZONE);
         if (Math.abs(this.suppliedHeading.getAsDouble()) < 181)
             commandedHeading = this.suppliedHeading.getAsDouble();
 
         ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                translationVal * Constants.Swerve.maxSpeed * m_speedReduction.getAsDouble(),
-                strafeVal * Constants.Swerve.maxSpeed * m_speedReduction.getAsDouble(),
-                rotationVal * Constants.Swerve.maxAngularVelocity * m_speedReduction.getAsDouble(),
+                translationVal * Constants.Swerve.MAX_VELOCITY_METERS_PER_SECOND * m_speedReduction.getAsDouble(),
+                strafeVal * Constants.Swerve.MAX_VELOCITY_METERS_PER_SECOND * m_speedReduction.getAsDouble(),
+                rotationVal * Constants.Swerve.MAX_ANGULAR_RADIANS_PER_SECOND * m_speedReduction.getAsDouble(),
                 s_Swerve.getYaw());
 
         // if d-pad desired heading is commanded, then rotate to that
@@ -90,9 +89,6 @@ public class Drive extends CommandBase {
             }
         }
 
-        SmartDashboard.putNumber("desired Heading", desiredHeading);
-        SmartDashboard.putNumber("Commanded Heading", commandedHeading);
-        SmartDashboard.putBoolean("at setpoint", driftCorrectionPID.atSetpoint());
         /* Drive */
         s_Swerve.drive(speeds);
 
