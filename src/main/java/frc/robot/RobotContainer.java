@@ -14,10 +14,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.autos.*;
-import frc.robot.commands.*;
-import frc.robot.subsystems.*;
+import frc.robot.autos.DriveSegment;
+import frc.robot.commands.Drive;
+import frc.robot.subsystems.Swerve;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -31,7 +30,6 @@ import frc.robot.subsystems.*;
 public class RobotContainer {
         /* Controllers */
         private final Joystick driver = new Joystick(0);
-        private final Joystick operator = new Joystick(1);
 
         /* Drive Controls */
         private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -45,8 +43,6 @@ public class RobotContainer {
         private final JoystickButton modAbsoluteOffSet = new JoystickButton(driver,
                         XboxController.Button.kLeftBumper.value);
 
-
-
         /* Subsystems */
         private final Swerve swerve = new Swerve();
         SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -56,15 +52,14 @@ public class RobotContainer {
          */
         public RobotContainer() {
                 swerve.setDefaultCommand(
-                        new Drive(
-                                swerve,
-                                () -> -driver.getRawAxis(translationAxis),
-                                () -> -driver.getRawAxis(strafeAxis),
-                                () -> -driver.getRawAxis(rotationAxis),
-                                () -> getDesiredHeading(),
-                                () -> speedReduction(),
-                                () -> robotCentric.getAsBoolean()));
-
+                                new Drive(
+                                                swerve,
+                                                () -> -driver.getRawAxis(translationAxis),
+                                                () -> -driver.getRawAxis(strafeAxis),
+                                                () -> -driver.getRawAxis(rotationAxis),
+                                                () -> getDesiredHeading(),
+                                                () -> speedReduction(),
+                                                () -> robotCentric.getAsBoolean()));
 
                 // driverUP = new POVButton(driver, 0);
                 // driverRIGHT = new POVButton(driver, 90);
@@ -116,15 +111,15 @@ public class RobotContainer {
 
         public double getDesiredHeading() {
                 // if (driverUP.getAsBoolean() || operatorUP.getAsBoolean()) {
-                //         return 0.0;
+                // return 0.0;
                 // } else if (driverRIGHT.getAsBoolean() || operatorRIGHT.getAsBoolean()) {
-                //         return -90.0;
+                // return -90.0;
                 // } else if (driverDOWN.getAsBoolean() || operatorDOWN.getAsBoolean()) {
-                //         return 180.0;
+                // return 180.0;
                 // } else if (driverLEFT.getAsBoolean() || operatorLEFT.getAsBoolean()) {
-                //         return 90.0;
+                // return 90.0;
                 // } else
-                        return 999;
+                return 999;
         }
 
         /**
@@ -142,24 +137,25 @@ public class RobotContainer {
 
         }
 
-        public void autonomousInit(){
+        public void autonomousInit() {
 
         }
 
         public void disabledInit() {
 
         }
+
         public void updateAutoChoices() {
                 /**
                  * Add potential autos to the chooser
                  */
                 autoChooser.addOption("Drive for 1 meter", (new DriveSegment(swerve,
-                                                List.of(
-                                                                new Translation2d(0, 0),
-                                                                new Translation2d(1, 0)),
-                                                Rotation2d.fromDegrees(0),
-                                                Rotation2d.fromDegrees(0),
-                                                true,
-                                                true).withTimeout(2.5)));
+                                List.of(
+                                                new Translation2d(0, 0),
+                                                new Translation2d(1, 0)),
+                                Rotation2d.fromDegrees(0),
+                                Rotation2d.fromDegrees(0),
+                                true,
+                                true).withTimeout(2.5)));
         }
 }

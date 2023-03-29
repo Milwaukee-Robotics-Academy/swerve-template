@@ -3,7 +3,6 @@ package frc.robot;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -147,8 +146,6 @@ public class Constants {
     public static final double MAX_ACCEL_METERS_PER_SECOND_SQUARED = 5.0;
     public static final double MAX_ANGULAR_RADIANS_PER_SECOND = Math.PI;
     public static final double MAX_ANGULAR_RADIANS_PER_SECOND_SQUARED = Math.PI;;
-    
-
 
     /* Constraint for the motion profilied robot angle controller */
     public static final TrapezoidProfile.Constraints THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(

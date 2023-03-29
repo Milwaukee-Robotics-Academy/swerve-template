@@ -6,32 +6,26 @@ import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
-import frc.robot.Constants.Swerve;
 
-  /**
-   * Class to represent and handle a swerve module
-   * A module's state is measured by a CANCoder for the absolute position,
-   * integrated NEO encoder for relative position
-   * for both rotation and linear movement
-   */
+/**
+ * Class to represent and handle a swerve module
+ * A module's state is measured by a CANCoder for the absolute position,
+ * integrated NEO encoder for relative position
+ * for both rotation and linear movement
+ */
 public class SwerveModule extends SubsystemBase {
-
-
 
   public final String description;
   public final int number;
@@ -107,7 +101,6 @@ public class SwerveModule extends SubsystemBase {
     return new SwerveModuleState(velocity, rot);
   }
 
-
   /**
    * 
    * @return The unsigned Angle of the Cancoder
@@ -136,12 +129,11 @@ public class SwerveModule extends SubsystemBase {
 
   }
 
-
-/**
- * Provides the sensors in a standard ServeModulePosition object
- * 
- * @return Current Position of sensors for this module
- */
+  /**
+   * Provides the sensors in a standard ServeModulePosition object
+   * 
+   * @return Current Position of sensors for this module
+   */
   public SwerveModulePosition getPosition() {
     double distance = driveEncoder.getPosition();
     Rotation2d rot = new Rotation2d(rotationEncoder.getPosition());
@@ -169,11 +161,10 @@ public class SwerveModule extends SubsystemBase {
 
     rotationEncoder.setPosition(Units.degreesToRadians(canCoder.getAbsolutePosition() - canCoderOffsetDegrees));
 
-
   }
 
   /**
-   *  The method used to set up the SparkMaxs and the Cancoders initially
+   * The method used to set up the SparkMaxs and the Cancoders initially
    */
   private void configureDevices() {
     // Drive motor configuration.

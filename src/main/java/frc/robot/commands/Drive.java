@@ -6,10 +6,8 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.Constants.Controls;
 import frc.robot.subsystems.Swerve;
 
 public class Drive extends CommandBase {
@@ -35,12 +33,12 @@ public class Drive extends CommandBase {
         this.m_speedReduction = speedReduction;
     }
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
         desiredHeading = s_Swerve.getYaw().getDegrees();
         driftCorrectionPID.enableContinuousInput(-180, 180);
-        driftCorrectionPID.setTolerance(10,10);
+        driftCorrectionPID.setTolerance(10, 10);
     }
 
     @Override
