@@ -65,8 +65,7 @@ public class DriveSegment extends SwerveControllerCommand{
     }
 
         private static ProfiledPIDController getThetaController() {
-            var profileConstraints = AutoConstants.;
-            var thetaController = new ProfiledPIDController(7, 0, 0, profileConstraints);
+            var thetaController = new ProfiledPIDController(Constants.AutoConstants.THETA_CONTROLLER_KP, 0, 0, Constants.AutoConstants.THETA_CONSTRAINTS);
             thetaController.enableContinuousInput(Math.PI * -1, Math.PI);
             return thetaController;
         }
