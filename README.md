@@ -23,17 +23,17 @@ All the settings that you need to change for SURE are set in the TODOs. Make sur
 
 ## Setting Offsets
 
-    For finding the offsets, use a piece of 1x1 metal that is straight against the forks of the front and back modules (on the left and right side) to ensure that the modules are straight. 
-    
-    Point the bevel gears of all the wheels in the same direction (either facing left or right), where a postive input to the drive motor drives the robot forward (you can use phoenix tuner to test this). If for some reason you set the offsets with the wheels backwards, you can change the ```DRIVE_MOTOR_INVERSION``` value to fix.
-    
-    Open smartdashboard (or shuffleboard and go to the smartdashboard tab), you will see 4 printouts called 
-        - ```Front Left Cancoder```
-        - ```Rear Left Cancoder```
-        - etc... 
-    
-    If you have already straightened the modules, copy those 4 numbers exactly (to 2 decimal places) to their respective ```angleOffset``` variable in constants.
-    **Note:** The CANcoder values printed to smartdashboard are in degrees, when copying the values to ```angleOffset``` you must use ```Rotation2d.fromDegrees("copied value")```.
+For finding the offsets, use a piece of 1x1 metal that is straight against the forks of the front and back modules (on the left and right side) to ensure that the modules are straight. 
+
+Point the bevel gears of all the wheels in the same direction (either facing left or right), where a postive input to the drive motor drives the robot forward (you can use phoenix tuner to test this). If for some reason you set the offsets with the wheels backwards, you can change the ```DRIVE_MOTOR_INVERSION``` value to fix.
+
+Open smartdashboard (or shuffleboard and go to the smartdashboard tab), you will see 4 printouts called 
+    - ```Front Left Cancoder```
+    - ```Rear Left Cancoder```
+    - etc... 
+
+If you have already straightened the modules, copy those 4 numbers exactly (to 2 decimal places) to their respective ```angleOffset``` variable in constants.
+**Note:** The CANcoder values printed to smartdashboard are in degrees, when copying the values to ```angleOffset``` you must use ```Rotation2d.fromDegrees("copied value")```.
 
  Angle Motor PID Values: <br>
     - To tune start with a low P value (0.01).
