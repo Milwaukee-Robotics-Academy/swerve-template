@@ -35,13 +35,15 @@ For finding the offsets, use a piece of 1x1 metal that is straight against the f
 - If you have already straightened the modules, copy those 4 numbers exactly (to 2 decimal places) to their respective ```angleOffset``` variable in constants.
 **Note:** The CANcoder values printed to smartdashboard are in degrees, when copying the values to ```angleOffset``` you must use ```Rotation2d.fromDegrees("copied value")```.
 
- Angle Motor PID Values: <br>
+## Feedback Settings
+
+### Angle Motor PID Values
     - To tune start with a low P value (0.01).
     - Multiply by 10 until the module starts oscilating around the set point
     - Scale back by searching for the value (for example, if it starts oscillating at a P of 10, then try (10 -> 5 -> 7.5 -> etc)) until the module doesn't oscillate around the setpoint.
     - If there is any overshoot you can add in some D by repeating the same process, leave at 0 if not. Always leave I at 0.
 
-```maxSpeed```: In Meters Per Second. ```maxAngularVelocity```: In Radians Per Second. For these you can use the theoretical values, but it is better to physically drive the robot and find the actual max values.
+```MAX_VELOCITY_METERS_PER_SECOND```: In Meters Per Second. ```MAX_ANGULAR_RADIANS_PER_SECOND```: In Radians Per Second. For these you can use the theoretical values, but it is better to physically drive the robot and find the actual max values.
 
 
 Get the drive characterization values (KS, KV, KA) by using the WPILib characterization tool, found [here](https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/introduction.html). You will need to lock your modules straight forward, and complete the characterization as if it was a standard tank drive.
