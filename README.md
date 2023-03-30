@@ -1,6 +1,11 @@
 # Milwaukee Robotics Academy Swerve Drive Base Template
 
-This code was designed for the Swerve Drive Specialties MK4 and MK4i modules using NEO motors, CANCoders and NavX2 Gyro. We learned (and copied) a LOT from Team364 
+This code was designed for the Swerve Drive Specialties MK4 and MK4i modules using
+- NEO motors
+- CANCoders 
+- NavX2 Gyro
+
+We learned (and copied) a LOT from Team364's [BaseFalconSwerve] (https://github.com/Team364/BaseFalconSwerve)
 
 ## Setting Constants
 All the settings that you need to change for SURE are set in the TODOs. Make sure you address all of the TODOs in order to use properly with your robot.
