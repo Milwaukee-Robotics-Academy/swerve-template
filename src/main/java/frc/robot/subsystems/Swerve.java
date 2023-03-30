@@ -19,181 +19,230 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-  /**
-     * TODO: description
-     */
+/**
+ * The Swerve class defines the drivetrain subsystem.
+ * it includes 4 {@link frc.robot.subsystems.SwerveModule}
+ */
 public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
     public GenericEntry[] canCoderValues;
     public GenericEntry[] rotationValues;
     public GenericEntry[] velocityValues;
-    
+
     private final AHRS gyro = new AHRS(SPI.Port.kMXP, (byte) 200);
 
     public Swerve() {
 
         mSwerveMods = new SwerveModule[] {
-            new SwerveModule(Constants.Swerve.MOD_0_Constants),
-            new SwerveModule(Constants.Swerve.MOD_1_Constants),
-            new SwerveModule(Constants.Swerve.MOD_2_Constants),
-            new SwerveModule(Constants.Swerve.MOD_3_Constants)
+                new SwerveModule(Constants.Swerve.MOD_0_Constants),
+                new SwerveModule(Constants.Swerve.MOD_1_Constants),
+                new SwerveModule(Constants.Swerve.MOD_2_Constants),
+                new SwerveModule(Constants.Swerve.MOD_3_Constants)
         };
 
-          /**
-     * TODO: description
-     */
+        /**
+         * These are entries for logging Module data
+         */
         canCoderValues = new GenericEntry[4];
         rotationValues = new GenericEntry[4];
         velocityValues = new GenericEntry[4];
-// TODO: Explain
-        Shuffleboard.getTab("Swerve").add("navx",gyro).withSize(2,2).withPosition(0,0);
-        for(SwerveModule mod : mSwerveMods){
-            canCoderValues[mod.number] = Shuffleboard.getTab("Swerve").add(mod.description + " Cancoder", mod.getCanCoderAngle().getDegrees()).withPosition((2+mod.number),0).getEntry();
-            rotationValues[mod.number] = Shuffleboard.getTab("Swerve").add(mod.description + " Integrated", mod.getState().angle.getDegrees()).withPosition((2+mod.number),1).getEntry();
-            velocityValues[mod.number] = Shuffleboard.getTab("Swerve").add(mod.description + " Velocity", mod.getState().speedMetersPerSecond).withPosition((2+mod.number),2).getEntry();    
+        
+        /**
+         *  Adding a Tab "Swerve" to the Shuffleboard to display Swerve data
+         */
+        Shuffleboard.getTab("Swerve").add("navx", gyro).withSize(2, 2).withPosition(0, 0);
+        for (SwerveModule mod : mSwerveMods) {
+            canCoderValues[mod.number] = Shuffleboard.getTab("Swerve")
+                    .add(mod.description + " Cancoder", mod.getCanCoderAngle().getDegrees())
+                    .withPosition((2 + mod.number), 0).getEntry();
+            rotationValues[mod.number] = Shuffleboard.getTab("Swerve")
+                    .add(mod.description + " Integrated", mod.getState().angle.getDegrees())
+                    .withPosition((2 + mod.number), 1).getEntry();
+            velocityValues[mod.number] = Shuffleboard.getTab("Swerve")
+                    .add(mod.description + " Velocity", mod.getState().speedMetersPerSecond)
+                    .withPosition((2 + mod.number), 2).getEntry();
         }
         swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.KINEMATICS, getYaw(), getModulePositions());
-        zeroHeading(0);
+        setHeading(0);
     }
 
     /**
-     * TODO: description
+     * This is the method that takes {@link edu.wpi.first.math.kinematics.ChassisSpeeds} and sends to each of the modules
+     * It is used by the default command {@link frc.robot.commands.Drive} to drive the drivetrain
      */
-    public void drive(ChassisSpeeds speeds){
+    public void drive(ChassisSpeeds speeds) {
         SwerveModuleState[] states = Constants.Swerve.KINEMATICS.toSwerveModuleStates(speeds);
-      //  SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.Swerve.maxSpeed);
+        // SwerveDriveKinematics.desaturateWheelSpeeds(states,
+        // Constants.Swerve.maxSpeed);
         setModuleStates(states);
     }
 
-// TODO: Explain
+    /**
+     * Not sure if this is needed any more. Another way to pass in data on how to drive the drivetrain
+     * @param translation
+     * @param rotation
+     * @param fieldRelative
+     * @param isOpenLoop
+     */
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
-       
-       ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-            translation.getX(), 
-            translation.getY(), 
-            rotation, 
-            getYaw()
-        );
 
-        SwerveModuleState[] swerveModuleStates =
-            Constants.Swerve.KINEMATICS.toSwerveModuleStates(
+        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                translation.getX(),
+                translation.getY(),
+                rotation,
+                getYaw());
+
+        SwerveModuleState[] swerveModuleStates = Constants.Swerve.KINEMATICS.toSwerveModuleStates(
                 fieldRelative ? speeds
-                                : new ChassisSpeeds(
-                                    translation.getX(), 
-                                    translation.getY(), 
-                                    rotation)
-                                );
+                        : new ChassisSpeeds(
+                                translation.getX(),
+                                translation.getY(),
+                                rotation));
 
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.MAX_VELOCITY_METERS_PER_SECOND);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates,
+                Constants.Swerve.MAX_VELOCITY_METERS_PER_SECOND);
 
-        for(SwerveModule mod : mSwerveMods){
+        for (SwerveModule mod : mSwerveMods) {
             mod.setState(swerveModuleStates[mod.number], isOpenLoop);
         }
     }
 
     /**
-     *  TODO: Explain
+     * Once the speeds are converted into {@link edu.wpi.first.math.kinematics.SwerveModuleState} they are passed
+     * to each module.
      * 
-     *  Used by SwerveControllerCommand in Auto
+     * Used by SwerveControllerCommand in Auto
      */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.MAX_VELOCITY_METERS_PER_SECOND);
-        
-        for(SwerveModule mod : mSwerveMods){
+
+        for (SwerveModule mod : mSwerveMods) {
             mod.setState(desiredStates[mod.number], false);
         }
-    }    
+    }
 
-    // TODO: Explain
+    /**
+     * We keep track of the "pose" of the robot with the gyro, encoders (and vision data) This returns the current state
+     * 
+     * @return {@link edu.wpi.first.math.geometry.Pose3d}
+     */
     public Pose2d getPose() {
         return swerveOdometry.getPoseMeters();
     }
 
-    // TODO: Explain
-    public SwerveDriveKinematics getKinematics(){
+    /**
+     *  This method returns a helper {@link edu.wpi.first.math.kinematics.SwerveDriveKinematics} This takes info about our robot
+     * and uses it to turn desired chassis velocities into desired states for each module
+     * @return
+     */
+    public SwerveDriveKinematics getKinematics() {
         return Constants.Swerve.KINEMATICS;
     }
 
-    // TODO: Explain
+   /**
+    *  resets our robots position on the field.
+    * @param pose
+    */
     public void resetOdometry(Pose2d pose) {
         swerveOdometry.resetPosition(getYaw(), getModulePositions(), pose);
     }
 
-    // TODO: Explain
-    public SwerveModuleState[] getModuleStates(){
+   /**
+    * 
+    * @return The module states for each module
+    */
+    public SwerveModuleState[] getModuleStates() {
         SwerveModuleState[] states = new SwerveModuleState[4];
-        for(SwerveModule mod : mSwerveMods){
+        for (SwerveModule mod : mSwerveMods) {
             states[mod.number] = mod.getState();
         }
         return states;
     }
 
-    // TODO: Explain
-    public SwerveModulePosition[] getModulePositions(){
+    /**
+     *  
+     * @return the module positions
+     */
+    public SwerveModulePosition[] getModulePositions() {
         SwerveModulePosition[] positions = new SwerveModulePosition[4];
-        for(SwerveModule mod : mSwerveMods){
+        for (SwerveModule mod : mSwerveMods) {
             positions[mod.number] = mod.getPosition();
         }
         return positions;
     }
 
-    // TODO: Explain
-    public void zeroHeading(){
+    /**
+     *  Set the Gyro heading to Zero. Used for when the robot is facing directly away from driverstation
+     */
+    public void zeroHeading() {
         gyro.zeroYaw();
         swerveOdometry.update(getYaw(), getModulePositions());
     }
 
-    // TODO: Explain (and rename)
-    public void zeroHeading(double heading){
+    /**
+     * Set the heading of the robot to the param passed in
+     * @param heading
+     */
+    public void setHeading(double heading) {
         gyro.zeroYaw();
-        gyro.setAngleAdjustment(heading); 
+        gyro.setAngleAdjustment(heading);
         swerveOdometry.update(getYaw(), getModulePositions());
     }
 
-    // TODO: Explain
+    /**
+     * 
+     * @return the Yaw from the Gyro (for the NavX it is getYaw() * -1 )
+     */
     public Rotation2d getYaw() {
-        return Rotation2d.fromDegrees(gyro.getYaw()*-1);
+        return Rotation2d.fromDegrees(gyro.getYaw() * -1);
     }
 
-    // TODO: Explain
+    /**
+     * 
+     * @return The Pitch of the Robot (front / back, if NavX installed correctly)
+     */
     public double getPitch() {
         return gyro.getPitch();
     }
-    // TODO: Explain
+
+    /**
+     * 
+     * @return The Roll of the Robot (left / right, if NavX installed correctly)
+     */
     public double getRoll() {
         return gyro.getRoll();
     }
-    
-    // TODO: Explain
-    public void resetModulesToAbsolute(){
-        for(SwerveModule mod : mSwerveMods){
-            mod.initRotationOffset();;
+
+    /**
+     * Used to set the turn motor encoder = Cancoder + offset. This may need to be done
+     * more freqently than on startup. Perhaps AutonomousInit and TeleopInit
+     */
+    public void resetModulesToAbsolute() {
+        for (SwerveModule mod : mSwerveMods) {
+            mod.initRotationOffset();
+            ;
         }
     }
 
-    // TODO: Explain
+    /**
+     * This runs every 20ms. Used to update the logging/dashboard.
+     */
     @Override
-    public void periodic(){
+    public void periodic() {
 
-
-        for(SwerveModule mod : mSwerveMods){
+        for (SwerveModule mod : mSwerveMods) {
             canCoderValues[mod.number].setDouble(mod.getCanCoderAngle().getDegrees());
             rotationValues[mod.number].setDouble(mod.getPosition().angle.getDegrees());
-            velocityValues[mod.number].setDouble(mod.getState().speedMetersPerSecond);    
+            velocityValues[mod.number].setDouble(mod.getState().speedMetersPerSecond);
         }
-
-
 
         SmartDashboard.putNumber("Pitch", this.getPitch());
 
-        Logger.getInstance().recordOutput("Robot",(swerveOdometry.update(getYaw(), getModulePositions())));
-        SmartDashboard.putNumber("Yaw",getYaw().getDegrees());
-
-
+        Logger.getInstance().recordOutput("Robot", (swerveOdometry.update(getYaw(), getModulePositions())));
+        SmartDashboard.putNumber("Yaw", getYaw().getDegrees());
 
         SmartDashboard.putNumber("Roll", this.getRoll());
-        
 
     }
 }

@@ -2,7 +2,6 @@ package frc.robot;
 
 import com.revrobotics.CANSparkMax.IdleMode;
 
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -11,6 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.lib.util.SwerveModuleConstants;
 
 /**
+ * Milwaukee Robotics Academy - Swerve Drive Template.
  * This class contains values that remain constant while the robot is running.
  * 
  * It's split into categories using subclasses, preventing too many members from

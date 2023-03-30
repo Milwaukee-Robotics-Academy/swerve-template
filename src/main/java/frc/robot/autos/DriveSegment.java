@@ -48,7 +48,7 @@ public class DriveSegment extends SwerveControllerCommand{
             
             if (m_resetPostion)
             {
-                m_swerveBase.zeroHeading(m_initialPose.getRotation().getDegrees());
+                m_swerveBase.setHeading(m_initialPose.getRotation().getDegrees());
                 m_swerveBase.resetOdometry(m_initialPose);
             }   
         }
