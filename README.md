@@ -43,10 +43,13 @@ For finding the offsets, use a piece of 1x1 metal that is straight against the f
     - Scale back by searching for the value (for example, if it starts oscillating at a P of 10, then try (10 -> 5 -> 7.5 -> etc)) until the module doesn't oscillate around the setpoint.
     - If there is any overshoot you can add in some D by repeating the same process, leave at 0 if not. Always leave I at 0.
 
-```MAX_VELOCITY_METERS_PER_SECOND```: In Meters Per Second. ```MAX_ANGULAR_RADIANS_PER_SECOND```: In Radians Per Second. For these you can use the theoretical values, but it is better to physically drive the robot and find the actual max values.
+### Maxes
+```MAX_VELOCITY_METERS_PER_SECOND```: In Meters Per Second. 
+```MAX_ANGULAR_RADIANS_PER_SECOND```: In Radians Per Second. 
+For these you can use the theoretical values, but it is better to physically drive the robot and find the actual max values.
 
-
-Get the drive characterization values (KS, KV, KA) by using the WPILib characterization tool, found [here](https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/introduction.html). You will need to lock your modules straight forward, and complete the characterization as if it was a standard tank drive.
-```driveKP```: 
-<br>After completing characterization and inserting the KS, KV, and KA values into the code, tune the drive motor kP until it doesn't overshoot and doesnt oscilate around a target velocity.
-<br>Leave ```driveKI```, ```driveKD```, and ```driveKF``` at 0.0.
+### Robot Characterization
+Get the drive characterization values (```DRIVE_KS```, ```DRIVE_KV```, ```DRIVE_KA```) by using the WPILib characterization tool, found [here](https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/introduction.html). You will need to lock your modules straight forward, and complete the characterization as if it was a standard tank drive.
+```DRIVE_KP```: 
+After completing characterization and inserting the KS, KV, and KA values into the code, tune the drive motor kP until it doesn't overshoot and doesnt oscilate around a target velocity.
+Leave ```DRIVE_KI``` , ```DRIVE_KD```, and ```DRIVE_KF``` at 0.0.
