@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.lib.util.SwerveModuleConstants;
 
 /**
+ * Milwaukee Robotics Academy - Swerve Drive Template.
  * This class contains values that remain constant while the robot is running.
  * 
  * It's split into categories using subclasses, preventing too many members from
