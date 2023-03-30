@@ -30,19 +30,30 @@ public class Constants {
     public static final int GYRO_RESET_BUTTON = XboxController.Button.kY.value;
 
     // Prevent from acclerating/decclerating to quick
-    public static final SlewRateLimiter X_DRIVE_LIMITER = new SlewRateLimiter(4);
-    public static final SlewRateLimiter Y_DRIVE_LIMITER = new SlewRateLimiter(4);
-    public static final SlewRateLimiter THETA_DRIVE_LIMITER = new SlewRateLimiter(4);
+    public static final double SLEW_RATE_LIMIT = 4.0;
+
   }
 
   /** All swerve constants. */
   public static class Swerve {
     /** Constants that apply to the whole drive train. */
-    public static final double TRACK_WIDTH = Units.inchesToMeters(18.75); // TODO: Set width of the drivetrain measured
-                                                                          // from the middle of the wheels.
-    public static final double WHEEL_BASE = Units.inchesToMeters(14.75); // TODO: Set length of the drivetrain measured
-                                                                         // from the middle of the wheels.
-    public static final double WHEEL_DIAMETER = Units.inchesToMeters(4.0 / 1.04085); // TODO: validate
+
+    /**
+     * The TRACK_WIDTH is a measure (in Meters) of the WIDTH of the drivertain.
+     * On a rectangular robot (Yes, Danny, Robots should be rectangular)
+     * It is measured from the middle of the left front wheel to the middle of the right front wheel
+     */
+    public static final double TRACK_WIDTH = Units.inchesToMeters(18.75); // TODO: Set width of the drivetrain
+    /**
+     * The WHEEL_BASE is a measure of the LENGTH (in Meters) of the drivertain.
+     * It is measured from the middle of the left front wheel to the middle of the left rear wheel
+     */                                                   
+    public static final double WHEEL_BASE = Units.inchesToMeters(14.75); // TODO: Set length of the drivetrain 
+
+    /**
+     * Cirumference of the wheel (including tread) in meters.
+     */
+    public static final double WHEEL_DIAMETER = Units.inchesToMeters(3.875); // TODO: validate Wheel Diameter
     public static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
 
     public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
@@ -51,10 +62,26 @@ public class Constants {
         new Translation2d(-WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
         new Translation2d(-WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0));
 
-    public static final double DRIVE_GEAR_RATIO = 6.75 / 1.0; // TODO: set based on gearing of specific modules used.
-                                                              // 6.75:1 for MK4i L2
+    /**
+     * Drive Gear ratio is based on which SDS swerve module you are using and which gearing you chose.
+     *  MK4 and MK4i:
+     *     L1 - 8.14 / 1.0
+     *     L2 - 6.75 / 1.0
+     *     L3 - 6.12 / 1.0
+     *     L4 - 5.14 / 1.0
+     * 
+     */
+    public static final double DRIVE_GEAR_RATIO = 6.75 / 1.0; // TODO: set based on gearing of specific modules used
     public static final double DRIVE_ROTATIONS_TO_METERS = WHEEL_CIRCUMFERENCE / DRIVE_GEAR_RATIO;
     public static final double DRIVE_RPM_TO_METERS_PER_SECOND = DRIVE_ROTATIONS_TO_METERS / 60.0;
+
+    /**
+     * Angle Gear ratio is based on which SDS swerve module you are using.
+     *  MK4:
+     *     12.8 / 1.0
+     *  MK4i:
+     *     (150.0 / 7.0) / 1.0
+     */
     public static final double ANGLE_GEAR_RATIO = ((150.0 / 7.0) / 1.0); // TODO: set based on specific modules used
     public static final double ANGLE_ROTATIONS_TO_RADIANS = (Math.PI * 2) / ANGLE_GEAR_RATIO;
     public static final double ANGLE_RPM_TO_RADIANS_PER_SECOND = DRIVE_ROTATIONS_TO_METERS / 60.0;
@@ -85,13 +112,23 @@ public class Constants {
     public static final double ANGLE_KF = 0.0;
 
     /** Swerve constraints. */
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = 4.5; // TODO: Set according to Modules used
+    /**
+     * We are taking the stated NEO Unadjusted Free speed from SDS for this.
+     * L1: 12.0 ft/sec (3.66 meters)
+     * L2: 14.5 ft/sec (4.42 meters)
+     * L3: 16.0 ft/sec (4.88 meters)
+     * TODO: Confirm actual max velocity
+     */
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = 4.42; // TODO: Set Max Velocity according to Robot
     public static final double MAX_ANGULAR_RADIANS_PER_SECOND = 4.0;
 
-    /** Inversions. */
-    public static final boolean DRIVE_MOTOR_INVERSION = true;
-    public static final boolean ANGLE_MOTOR_INVERSION = false;
-    public static final boolean CANCODER_INVERSION = false;
+    /** Inversions.
+     * `CANCoder and Angle Motor should both must be set such that they are Counter Clockwise positve (CCW+).
+     * As they turn counter clockwise (CCW) their values INCREASE positively.
+     */
+    public static final boolean DRIVE_MOTOR_INVERSION = true; // TODO: validate Drive Motor Inversion
+    public static final boolean ANGLE_MOTOR_INVERSION = false; // TODO: validate Angle Motor Inversion
+    public static final boolean CANCODER_INVERSION = false; // TODO: validate CANCoder Inversion
 
     /** Idle modes. */
     public static final IdleMode DRIVE_IDLE_MODE = IdleMode.kBrake;
@@ -101,6 +138,8 @@ public class Constants {
      * Module specific constants.
      * CanCoder offset is in DEGREES, not radians like the rest of the repo.
      * This is to make offset slightly more accurate and easier to measure.
+     * TODO: SET CAN IDs
+     * TODO: Set Offsets for angle/rotation sensor
      */
     public static final SwerveModuleConstants MOD_0_Constants = new SwerveModuleConstants(
         0,
