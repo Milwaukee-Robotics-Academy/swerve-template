@@ -44,8 +44,8 @@ For finding the offsets, use a piece of 1x1 metal that is straight against the f
     - If there is any overshoot you can add in some D by repeating the same process, leave at 0 if not. Always leave I at 0.
 
 ### Maxes
-```MAX_VELOCITY_METERS_PER_SECOND```: In Meters Per Second. 
-```MAX_ANGULAR_RADIANS_PER_SECOND```: In Radians Per Second. 
+- ```MAX_VELOCITY_METERS_PER_SECOND```: In Meters Per Second. 
+- ```MAX_ANGULAR_RADIANS_PER_SECOND```: In Radians Per Second. 
 For these you can use the theoretical values, but it is better to physically drive the robot and find the actual max values.
 
 ### Robot Characterization
