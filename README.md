@@ -50,6 +50,6 @@ For these you can use the theoretical values, but it is better to physically dri
 
 ### Robot Characterization
 Get the drive characterization values (```DRIVE_KS```, ```DRIVE_KV```, ```DRIVE_KA```) by using the WPILib characterization tool, found [here](https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/introduction.html). You will need to lock your modules straight forward, and complete the characterization as if it was a standard tank drive.
-```DRIVE_KP```: 
-After completing characterization and inserting the KS, KV, and KA values into the code, tune the drive motor kP until it doesn't overshoot and doesnt oscilate around a target velocity.
+
+After completing characterization and inserting the KS, KV, and KA values into the code, tune the ```DRIVE_KP``` until it doesn't overshoot and doesnt oscilate around a target velocity.
 Leave ```DRIVE_KI``` , ```DRIVE_KD```, and ```DRIVE_KF``` at 0.0.
