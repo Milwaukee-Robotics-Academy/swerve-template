@@ -16,10 +16,23 @@ All the settings that you need to change for SURE are set in the TODOs. Make sur
     - Angle Falcon Motor PID Values
 
 ## Drive Motor, Angle Motor, and CANCoder Invert
-<br>This can always remain false, since you set your offsets in the next step such that a positive input to the drive motor will cause the robot to drive forwards.
-<br>However this can be set to true if for some reason you prefer the bevel gears on the wheel to face one direction or another when setting offsets. 
+This can always remain false, since you set your offsets in the next step such that a positive input to the drive motor will cause the robot to drive forwards.
+However this can be set to true if for some reason you prefer the bevel gears on the wheel to face one direction or another when setting offsets. 
 
-```Module Specific Constants```: set the Can Id's of the motors and CANCoders for the respective modules, see the next step for setting offsets.
+### CAN IDs
+
+In Constants, set the CAN IDs as discovered by the REV Hardware client and Phoenix Tuner. 
+Set the CAN Id's of the motors and CANCoders for the respective modules, see the next step for setting offsets.
+```driveMotorID``` ```angleMotorID``` ```canCoderID``` like this:
+
+
+    public static final SwerveModuleConstants MOD_0_Constants = new SwerveModuleConstants(
+    0,
+    1,
+    2,
+    3,
+    203.115234,
+    "Front Left");
 
 ## Setting Offsets
 
