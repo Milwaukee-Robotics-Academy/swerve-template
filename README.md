@@ -38,10 +38,10 @@ For finding the offsets, use a piece of 1x1 metal that is straight against the f
 ## Feedback Settings
 
 ### Angle Motor PID Values
-    - To tune start with a low P value (0.01).
-    - Multiply by 10 until the module starts oscilating around the set point
-    - Scale back by searching for the value (for example, if it starts oscillating at a P of 10, then try (10 -> 5 -> 7.5 -> etc)) until the module doesn't oscillate around the setpoint.
-    - If there is any overshoot you can add in some D by repeating the same process, leave at 0 if not. Always leave I at 0.
+- To tune start with a low P value (0.01).
+- Multiply by 10 until the module starts oscilating around the set point
+- Scale back by searching for the value (for example, if it starts oscillating at a P of 10, then try (10 -> 5 -> 7.5 -> etc)) until the module doesn't oscillate around the setpoint.
+- If there is any overshoot you can add in some D by repeating the same process, leave at 0 if not. Always leave I at 0.
 
 ### Maxes
 - ```MAX_VELOCITY_METERS_PER_SECOND```: In Meters Per Second. 
