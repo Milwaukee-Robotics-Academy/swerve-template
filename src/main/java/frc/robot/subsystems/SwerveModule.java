@@ -42,16 +42,26 @@ public class SwerveModule extends SubsystemBase {
   // robot is turned on
   private final double canCoderOffsetDegrees;
 
-  // TODO: Explain
+  /**
+   * PID Controllers to control the drive motor and rotation motors
+   */
   private final SparkMaxPIDController rotationController;
   private final SparkMaxPIDController driveController;
-  // TODO: Explain
+  
+  /**
+   * Helper class to provide the FeedForward outputs for velocity controlled drive motor
+   */
   private final SimpleMotorFeedforward driveFeedforward;
 
-  // TODO: Explain
+  /**
+   *  Used to keep a heading if not commanded to change it. (Drift correction)
+   */
   private double lastAngle;
 
-  // TODO: Explain
+  /**
+   * Constructor for the Module. take in the constraints and use it to set up the sepcific module
+   * @param constants
+   */
   public SwerveModule(SwerveModuleConstants constants) {
     this.number = constants.number;
     this.description = constants.description;
@@ -73,7 +83,13 @@ public class SwerveModule extends SubsystemBase {
     lastAngle = getState().angle.getRadians();
   }
 
-  // TOOD: Explain
+  /**
+   * Based on the passed in state, this method will give commands to the motors.
+   * If open loop, pass the speed calculated by the commanded speed / max speed.
+   * If Closed loop, set the drive setpoint to the velocity
+   * @param state
+   * @param isOpenLoop
+   */
   public void setState(SwerveModuleState state, boolean isOpenLoop) {
     // Prevents angle motor from turning further than it needs to.
     // E.G. rotating from 10 to 270 degrees CW vs CCW.
