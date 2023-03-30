@@ -16,13 +16,15 @@ All the settings that you need to change for SURE are set in the TODOs. Make sur
     * Drive Motor Gear Ratio
     * Angle Falcon Motor PID Values
 
-```Drive Motor, Angle Motor, and CANCoder Invert```: 
+**Drive Motor, Angle Motor, and CANCoder Invert** 
+----
 <br>This can always remain false, since you set your offsets in the next step such that a positive input to the drive motor will cause the robot to drive forwards.
 <br>However this can be set to true if for some reason you prefer the bevel gears on the wheel to face one direction or another when setting offsets. 
 
 ```Module Specific Constants```: set the Can Id's of the motors and CANCoders for the respective modules, see the next step for setting offsets.
 
-```Setting Offsets```
+**Setting Offsets** 
+----
     * For finding the offsets, use a piece of 1x1 metal that is straight against the forks of the front and back modules (on the left and right side) to ensure that the modules are straight. 
     * Point the bevel gears of all the wheels in the same direction (either facing left or right), where a postive input to the drive motor drives the robot forward (you can use phoenix tuner to test this). If for some reason you set the offsets with the wheels backwards, you can change the ```driveMotorInvert``` value to fix.
     * Open smartdashboard (or shuffleboard and go to the smartdashboard tab), you will see 4 printouts called "Mod 0 Cancoder", "Mod 1 Cancoder", etc. 
@@ -40,5 +42,5 @@ All the settings that you need to change for SURE are set in the TODOs. Make sur
 
 Get the drive characterization values (KS, KV, KA) by using the WPILib characterization tool, found [here](https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-characterization/introduction.html). You will need to lock your modules straight forward, and complete the characterization as if it was a standard tank drive.
 ```driveKP```: 
-<br>After completeing characterization and inserting the KS, KV, and KA values into the code, tune the drive motor kP until it doesn't overshoot and doesnt oscilate around a target velocity.
+<br>After completing characterization and inserting the KS, KV, and KA values into the code, tune the drive motor kP until it doesn't overshoot and doesnt oscilate around a target velocity.
 <br>Leave ```driveKI```, ```driveKD```, and ```driveKF``` at 0.0.
