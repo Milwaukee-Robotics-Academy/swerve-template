@@ -240,6 +240,9 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("Pitch", this.getPitch());
 
         Logger.getInstance().recordOutput("Robot", (swerveOdometry.update(getYaw(), getModulePositions())));
+        Logger.getInstance().recordOutput("SwerveStates", getModuleStates());
+
+
         SmartDashboard.putNumber("Yaw", getYaw().getDegrees());
 
         SmartDashboard.putNumber("Roll", this.getRoll());
