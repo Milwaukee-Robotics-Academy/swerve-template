@@ -29,6 +29,7 @@ public class Swerve extends SubsystemBase {
     public GenericEntry[] canCoderValues;
     public GenericEntry[] rotationValues;
     public GenericEntry[] velocityValues;
+    private DriveMode driveMode = DriveMode.NORMAL;
 
     private final AHRS gyro = new AHRS(SPI.Port.kMXP, (byte) 200);
 
@@ -47,9 +48,9 @@ public class Swerve extends SubsystemBase {
         canCoderValues = new GenericEntry[4];
         rotationValues = new GenericEntry[4];
         velocityValues = new GenericEntry[4];
-        
+
         /**
-         *  Adding a Tab "Swerve" to the Shuffleboard to display Swerve data
+         * Adding a Tab "Swerve" to the Shuffleboard to display Swerve data
          */
         Shuffleboard.getTab("Swerve").add("navx", gyro).withSize(2, 2).withPosition(0, 0);
         for (SwerveModule mod : mSwerveMods) {
@@ -68,48 +69,61 @@ public class Swerve extends SubsystemBase {
     }
 
     /**
-     * This is the method that takes {@link edu.wpi.first.math.kinematics.ChassisSpeeds} and sends to each of the modules
-     * It is used by the default command {@link frc.robot.commands.Drive} to drive the drivetrain
+     * This is the method that takes
+     * {@link edu.wpi.first.math.kinematics.ChassisSpeeds} and sends to each of the
+     * modules
+     * It is used by the default command {@link frc.robot.commands.Drive} to drive
+     * the drivetrain
      */
     public void drive(ChassisSpeeds speeds) {
-        SwerveModuleState[] states = Constants.Swerve.KINEMATICS.toSwerveModuleStates(speeds);
-        // SwerveDriveKinematics.desaturateWheelSpeeds(states,
-        // Constants.Swerve.maxSpeed);
-        setModuleStates(states);
+        if (isXstance()) {
+            setXStance();
+        } else {
+            SwerveModuleState[] states = Constants.Swerve.KINEMATICS.toSwerveModuleStates(speeds);
+            // SwerveDriveKinematics.desaturateWheelSpeeds(states,
+            // Constants.Swerve.maxSpeed);
+            setModuleStates(states);
+        }
     }
 
     /**
-     * Not sure if this is needed any more. Another way to pass in data on how to drive the drivetrain
+     * Not sure if this is needed any more. Another way to pass in data on how to
+     * drive the drivetrain
+     * 
      * @param translation
      * @param rotation
      * @param fieldRelative
      * @param isOpenLoop
      */
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+        if (isXstance()) {
+            setXStance();
+        } else {
+            ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                    translation.getX(),
+                    translation.getY(),
+                    rotation,
+                    getYaw());
 
-        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                translation.getX(),
-                translation.getY(),
-                rotation,
-                getYaw());
+            SwerveModuleState[] swerveModuleStates = Constants.Swerve.KINEMATICS.toSwerveModuleStates(
+                    fieldRelative ? speeds
+                            : new ChassisSpeeds(
+                                    translation.getX(),
+                                    translation.getY(),
+                                    rotation));
 
-        SwerveModuleState[] swerveModuleStates = Constants.Swerve.KINEMATICS.toSwerveModuleStates(
-                fieldRelative ? speeds
-                        : new ChassisSpeeds(
-                                translation.getX(),
-                                translation.getY(),
-                                rotation));
+            SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates,
+                    Constants.Swerve.MAX_VELOCITY_METERS_PER_SECOND);
 
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates,
-                Constants.Swerve.MAX_VELOCITY_METERS_PER_SECOND);
-
-        for (SwerveModule mod : mSwerveMods) {
-            mod.setState(swerveModuleStates[mod.number], isOpenLoop);
+            for (SwerveModule mod : mSwerveMods) {
+                mod.setState(swerveModuleStates[mod.number], isOpenLoop);
+            }
         }
     }
 
     /**
-     * Once the speeds are converted into {@link edu.wpi.first.math.kinematics.SwerveModuleState} they are passed
+     * Once the speeds are converted into
+     * {@link edu.wpi.first.math.kinematics.SwerveModuleState} they are passed
      * to each module.
      * 
      * Used by SwerveControllerCommand in Auto
@@ -123,7 +137,8 @@ public class Swerve extends SubsystemBase {
     }
 
     /**
-     * We keep track of the "pose" of the robot with the gyro, encoders (and vision data) This returns the current state
+     * We keep track of the "pose" of the robot with the gyro, encoders (and vision
+     * data) This returns the current state
      * 
      * @return {@link edu.wpi.first.math.geometry.Pose3d}
      */
@@ -132,26 +147,31 @@ public class Swerve extends SubsystemBase {
     }
 
     /**
-     *  This method returns a helper {@link edu.wpi.first.math.kinematics.SwerveDriveKinematics} This takes info about our robot
-     * and uses it to turn desired chassis velocities into desired states for each module
+     * This method returns a helper
+     * {@link edu.wpi.first.math.kinematics.SwerveDriveKinematics} This takes info
+     * about our robot
+     * and uses it to turn desired chassis velocities into desired states for each
+     * module
+     * 
      * @return
      */
     public SwerveDriveKinematics getKinematics() {
         return Constants.Swerve.KINEMATICS;
     }
 
-   /**
-    *  resets our robots position on the field.
-    * @param pose
-    */
+    /**
+     * resets our robots position on the field.
+     * 
+     * @param pose
+     */
     public void resetOdometry(Pose2d pose) {
         swerveOdometry.resetPosition(getYaw(), getModulePositions(), pose);
     }
 
-   /**
-    * 
-    * @return The module states for each module
-    */
+    /**
+     * 
+     * @return The module states for each module
+     */
     public SwerveModuleState[] getModuleStates() {
         SwerveModuleState[] states = new SwerveModuleState[4];
         for (SwerveModule mod : mSwerveMods) {
@@ -161,7 +181,7 @@ public class Swerve extends SubsystemBase {
     }
 
     /**
-     *  
+     * 
      * @return the module positions
      */
     public SwerveModulePosition[] getModulePositions() {
@@ -173,7 +193,69 @@ public class Swerve extends SubsystemBase {
     }
 
     /**
-     *  Set the Gyro heading to Zero. Used for when the robot is facing directly away from driverstation
+     * Sets the swerve modules in the x-stance orientation. In this orientation the
+     * wheels are aligned
+     * to make an 'X'. This makes it more difficult for other robots to push the
+     * robot, which is
+     * useful when shooting.
+     */
+    public void setXStance() {
+        ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
+        SwerveModuleState[] states = getKinematics().toSwerveModuleStates(chassisSpeeds);
+        states[0].angle = new Rotation2d(
+                Math.PI / 2 - Math.atan(Constants.Swerve.TRACK_WIDTH / Constants.Swerve.WHEEL_BASE));
+        states[1].angle = new Rotation2d(
+                Math.PI / 2 + Math.atan(Constants.Swerve.TRACK_WIDTH / Constants.Swerve.WHEEL_BASE));
+        states[2].angle = new Rotation2d(
+                Math.PI / 2 + Math.atan(Constants.Swerve.TRACK_WIDTH / Constants.Swerve.WHEEL_BASE));
+        states[3].angle = new Rotation2d(
+                3.0 / 2.0 * Math.PI - Math.atan(Constants.Swerve.TRACK_WIDTH / Constants.Swerve.WHEEL_BASE));
+        for (SwerveModule swerveModule : mSwerveMods) {
+            swerveModule.setState(states[swerveModule.number], true);
+        }
+    }
+
+    public void relax() {
+        ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
+        SwerveModuleState[] states = getKinematics().toSwerveModuleStates(chassisSpeeds);
+        states[0].angle = Rotation2d.fromDegrees(0);
+        states[1].angle = Rotation2d.fromDegrees(0);
+        states[2].angle = Rotation2d.fromDegrees(0);
+        states[3].angle = Rotation2d.fromDegrees(0);
+        for (SwerveModule swerveModule : mSwerveMods) {
+            swerveModule.setState(states[swerveModule.number], true);
+        }
+    }
+
+    /**
+     * Puts the drivetrain into the x-stance orientation. In this orientation the
+     * wheels are aligned
+     * to make an 'X'. This makes it more difficult for other robots to push the
+     * robot, which is
+     * useful when shooting. The robot cannot be driven until x-stance is disabled.
+     */
+    public void enableXstance() {
+        this.driveMode = DriveMode.X;
+        this.setXStance();
+    }
+
+    /** Disables the x-stance, allowing the robot to be driven. */
+    public void disableXstance() {
+        this.driveMode = DriveMode.NORMAL;
+    }
+
+    /**
+     * Returns true if the robot is in the x-stance orientation.
+     *
+     * @return true if the robot is in the x-stance orientation
+     */
+    public boolean isXstance() {
+        return this.driveMode == DriveMode.X;
+    }
+
+    /**
+     * Set the Gyro heading to Zero. Used for when the robot is facing directly away
+     * from driverstation
      */
     public void zeroHeading() {
         gyro.zeroYaw();
@@ -182,6 +264,7 @@ public class Swerve extends SubsystemBase {
 
     /**
      * Set the heading of the robot to the param passed in
+     * 
      * @param heading
      */
     public void setHeading(double heading) {
@@ -215,7 +298,8 @@ public class Swerve extends SubsystemBase {
     }
 
     /**
-     * Used to set the turn motor encoder = Cancoder + offset. This may need to be done
+     * Used to set the turn motor encoder = Cancoder + offset. This may need to be
+     * done
      * more freqently than on startup. Perhaps AutonomousInit and TeleopInit
      */
     public void resetModulesToAbsolute() {
@@ -244,5 +328,10 @@ public class Swerve extends SubsystemBase {
 
         SmartDashboard.putNumber("Roll", this.getRoll());
 
+    }
+
+    private enum DriveMode {
+        NORMAL,
+        X
     }
 }
