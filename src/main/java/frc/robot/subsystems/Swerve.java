@@ -13,6 +13,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -53,15 +54,16 @@ public class Swerve extends SubsystemBase {
          */
         Shuffleboard.getTab("Swerve").add("navx", gyro).withSize(2, 2).withPosition(0, 0);
         for (SwerveModule mod : mSwerveMods) {
-            canCoderValues[mod.number] = Shuffleboard.getTab("Swerve")
-                    .add(mod.description + " Cancoder", mod.getCanCoderAngle().getDegrees())
-                    .withPosition((2 + mod.number), 0).getEntry();
-            rotationValues[mod.number] = Shuffleboard.getTab("Swerve")
-                    .add(mod.description + " Integrated", mod.getState().angle.getDegrees())
-                    .withPosition((2 + mod.number), 1).getEntry();
-            velocityValues[mod.number] = Shuffleboard.getTab("Swerve")
-                    .add(mod.description + " Velocity", mod.getState().speedMetersPerSecond)
-                    .withPosition((2 + mod.number), 2).getEntry();
+            Shuffleboard.getTab("Swerve").add(mod).withPosition((2 + mod.number), 0);
+            // canCoderValues[mod.number] = Shuffleboard.getTab("Swerve")
+            //         .add(mod.description + " Cancoder", mod.getCanCoderAngle().getDegrees())
+            //         .withPosition((2 + mod.number), 0).getEntry();
+            // rotationValues[mod.number] = Shuffleboard.getTab("Swerve")
+            //         .add(mod.description + " Integrated", mod.getState().angle.getDegrees())
+            //         .withPosition((2 + mod.number), 1).getEntry();
+            // velocityValues[mod.number] = Shuffleboard.getTab("Swerve")
+            //         .add(mod.description + " Velocity", mod.getState().speedMetersPerSecond)
+            //         .withPosition((2 + mod.number), 2).getEntry();
         }
         swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.KINEMATICS, getYaw(), getModulePositions());
         setHeading(0);
@@ -221,7 +223,6 @@ public class Swerve extends SubsystemBase {
     public void resetModulesToAbsolute() {
         for (SwerveModule mod : mSwerveMods) {
             mod.initRotationOffset();
-            ;
         }
     }
 
@@ -235,6 +236,7 @@ public class Swerve extends SubsystemBase {
             canCoderValues[mod.number].setDouble(mod.getCanCoderAngle().getDegrees());
             rotationValues[mod.number].setDouble(mod.getPosition().angle.getDegrees());
             velocityValues[mod.number].setDouble(mod.getState().speedMetersPerSecond);
+            
         }
 
         SmartDashboard.putNumber("Pitch", this.getPitch());
@@ -248,4 +250,9 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("Roll", this.getRoll());
 
     }
-}
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+    }
+        
+    }

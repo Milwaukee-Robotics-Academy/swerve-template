@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
@@ -47,19 +48,22 @@ public class SwerveModule extends SubsystemBase {
    */
   private final SparkMaxPIDController rotationController;
   private final SparkMaxPIDController driveController;
-  
+
   /**
-   * Helper class to provide the FeedForward outputs for velocity controlled drive motor
+   * Helper class to provide the FeedForward outputs for velocity controlled drive
+   * motor
    */
   private final SimpleMotorFeedforward driveFeedforward;
 
   /**
-   *  Used to keep a heading if not commanded to change it. (Drift correction)
+   * Used to keep a heading if not commanded to change it. (Drift correction)
    */
   private double lastAngle;
 
   /**
-   * Constructor for the Module. take in the constraints and use it to set up the sepcific module
+   * Constructor for the Module. take in the constraints and use it to set up the
+   * sepcific module
+   * 
    * @param constants
    */
   public SwerveModule(SwerveModuleConstants constants) {
@@ -87,6 +91,7 @@ public class SwerveModule extends SubsystemBase {
    * Based on the passed in state, this method will give commands to the motors.
    * If open loop, pass the speed calculated by the commanded speed / max speed.
    * If Closed loop, set the drive setpoint to the velocity
+   * 
    * @param state
    * @param isOpenLoop
    */
@@ -130,6 +135,13 @@ public class SwerveModule extends SubsystemBase {
 
   }
 
+  public double getCanCoderDegrees() {
+    double unsignedAngle = (Units.degreesToRadians(canCoder.getAbsolutePosition()))
+        % (2 * Math.PI);
+
+    return unsignedAngle;
+  }
+
   /**
    * 
    * @return The unsigned Angle of the Integrated
@@ -145,6 +157,16 @@ public class SwerveModule extends SubsystemBase {
 
   }
 
+  public double getIntegratedDegrees() {
+
+    double unsignedAngle = rotationEncoder.getPosition() % (2 * Math.PI);
+
+    if (unsignedAngle < 0)
+      unsignedAngle += 2 * Math.PI;
+
+    return unsignedAngle;
+
+  }
   /**
    * Provides the sensors in a standard ServeModulePosition object
    * 
@@ -156,6 +178,9 @@ public class SwerveModule extends SubsystemBase {
     return new SwerveModulePosition(distance, rot);
   }
 
+  public double getVelocity() {
+    return driveEncoder.getVelocity();
+  }
 
   /**
    * Initialize the integrated NEO encoder to the offset (relative to home
@@ -229,5 +254,18 @@ public class SwerveModule extends SubsystemBase {
   public void stop() {
     driveMotor.set(0);
     rotationMotor.set(0);
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    builder.setSmartDashboardType(this.description + " #" + this.number);
+    builder.addDoubleProperty("CANCoder", this::getCanCoderDegrees, null);
+    builder.addDoubleProperty("Rotation", this::getIntegratedDegrees, null);
+    builder.addDoubleProperty("Velocity", this::getVelocity, null);
+    // builder.addDoubleProperty("VelocitySetpoint", this::getMeasurement, null);
+
+    // builder.addDoubleProperty("Distance", this::getError, null);
+    // builder.addBooleanProperty("atSetpoint", this::atSetpoint, null);
+
   }
 }
