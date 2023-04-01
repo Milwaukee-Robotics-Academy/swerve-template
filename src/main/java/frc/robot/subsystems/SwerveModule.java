@@ -182,6 +182,10 @@ public class SwerveModule extends SubsystemBase {
     return driveEncoder.getVelocity();
   }
 
+  public double getDriveMotorTemperature() {
+    return driveMotor.getMotorTemperature();
+  }
+
   /**
    * Initialize the integrated NEO encoder to the offset (relative to home
    * position)
@@ -262,6 +266,8 @@ public class SwerveModule extends SubsystemBase {
     builder.addDoubleProperty("CANCoder", this::getCanCoderDegrees, null);
     builder.addDoubleProperty("Rotation", this::getIntegratedDegrees, null);
     builder.addDoubleProperty("Velocity", this::getVelocity, null);
+    builder.addDoubleProperty("DriveTemp", this::getDriveMotorTemperature, null);
+
     // builder.addDoubleProperty("VelocitySetpoint", this::getMeasurement, null);
 
     // builder.addDoubleProperty("Distance", this::getError, null);
