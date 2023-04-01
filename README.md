@@ -50,7 +50,7 @@ For finding the offsets, use a piece of 1x1 metal that is straight against the f
     - ```Rear Left Cancoder```
     - etc... 
 
-- If you have already straightened the modules, copy those 4 numbers exactly (to 2 decimal places) to their respective ```angleOffset``` variable in constants.
+- If you have already straightened the modules, copy those 4 numbers from ```CANCoder Position``` exactly (to 2 decimal places) to their respective ```angleOffset``` variable in constants.
 **Note:** The CANcoder values printed to smartdashboard are in degrees, when copying the values to ```angleOffset``` you must use ```Rotation2d.fromDegrees("copied value")```.
 
 ## Feedback Settings

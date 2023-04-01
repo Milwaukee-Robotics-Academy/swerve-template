@@ -56,7 +56,7 @@ public class SwerveModule extends SubsystemBase {
   private final SimpleMotorFeedforward driveFeedforward;
 
   /**
-   * Used to keep a heading if not commanded to change it. (Drift correction)
+   * Used to keep an angle if not commanded to change it. 
    */
   private double lastAngle;
 
