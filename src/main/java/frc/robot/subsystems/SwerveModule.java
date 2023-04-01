@@ -41,7 +41,7 @@ public class SwerveModule extends SubsystemBase {
 
   // absolute offset for the CANCoder so that the wheels can be aligned when the
   // robot is turned on
-  private final double canCoderOffsetDegrees;
+  private final Rotation2d canCoderOffset;
 
   /**
    * PID Controllers to control the drive motor and rotation motors
@@ -81,7 +81,7 @@ public class SwerveModule extends SubsystemBase {
     rotationController = rotationMotor.getPIDController();
 
     canCoder = new CANCoder(constants.cancoderID);
-    canCoderOffsetDegrees = constants.angleOffset;
+    canCoderOffset = Rotation2d.fromDegrees(constants.angleOffset);
 
     configureDevices();
     lastAngle = getState().angle.getRadians();
@@ -132,16 +132,21 @@ public class SwerveModule extends SubsystemBase {
         % (2 * Math.PI);
 
     return new Rotation2d(unsignedAngle);
-
   }
 
   public double getCanCoderDegrees() {
-    double unsignedAngle = (Units.degreesToRadians(canCoder.getAbsolutePosition()))
-        % (2 * Math.PI);
 
-    return unsignedAngle;
+    return canCoder.getAbsolutePosition();
   }
 
+  public Rotation2d getCanCoderWithOffset() {
+
+    double unsignedAngle = (Units.degreesToRadians(canCoder.getAbsolutePosition()) - canCoderOffset.getRadians())
+        % (2 * Math.PI);
+
+    return new Rotation2d(unsignedAngle);
+
+  }
   /**
    * 
    * @return The unsigned Angle of the Integrated
@@ -158,14 +163,13 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double getIntegratedDegrees() {
-
+    
     double unsignedAngle = rotationEncoder.getPosition() % (2 * Math.PI);
 
     if (unsignedAngle < 0)
       unsignedAngle += 2 * Math.PI;
 
-    return unsignedAngle;
-
+    return  Rotation2d.fromRadians(unsignedAngle).getDegrees();
   }
   /**
    * Provides the sensors in a standard ServeModulePosition object
@@ -193,8 +197,8 @@ public class SwerveModule extends SubsystemBase {
    */
   public void initRotationOffset() {
 
-    rotationEncoder.setPosition(Units.degreesToRadians(canCoder.getAbsolutePosition() - canCoderOffsetDegrees));
-
+    //rotationEncoder.setPosition(Units.degreesToRadians(canCoder.getAbsolutePosition() - canCoderOffsetDegrees));
+    rotationEncoder.setPosition(getCanCoderWithOffset().getRadians());
   }
 
   /**
@@ -235,7 +239,7 @@ public class SwerveModule extends SubsystemBase {
 
     rotationEncoder.setPositionConversionFactor(Constants.Swerve.ANGLE_ROTATIONS_TO_RADIANS);
     rotationEncoder.setVelocityConversionFactor(Constants.Swerve.ANGLE_RPM_TO_RADIANS_PER_SECOND);
-    rotationEncoder.setPosition(Units.degreesToRadians(canCoder.getAbsolutePosition() - canCoderOffsetDegrees));
+    rotationEncoder.setPosition(Units.degreesToRadians(canCoder.getAbsolutePosition() - canCoderOffset.getDegrees()));
 
     // CanCoder configuration.
     CANCoderConfiguration canCoderConfiguration = new CANCoderConfiguration();

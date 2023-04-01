@@ -41,7 +41,7 @@ public class RobotContainer {
         private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
         private final JoystickButton slow = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
         private final JoystickButton modAbsoluteOffSet = new JoystickButton(driver,
-                        XboxController.Button.kLeftBumper.value);
+                        XboxController.Button.kStart.value);
 
         /* Subsystems */
         private final Swerve swerve = new Swerve();

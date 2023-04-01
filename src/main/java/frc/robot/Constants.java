@@ -143,34 +143,34 @@ public class Constants {
      */
     public static final SwerveModuleConstants MOD_0_Constants = new SwerveModuleConstants(
         0,
-        1,
         2,
-        3,
-        203.115234,
+        4,
+        12,
+        110.65,
         "Front Left");
 
     public static final SwerveModuleConstants MOD_1_Constants = new SwerveModuleConstants(
         1,
-        4,
-        5,
-        6,
-        191.074219,
+        1,
+        7,
+        9,
+        121.37,
         "Front Right");
 
     public static final SwerveModuleConstants MOD_2_Constants = new SwerveModuleConstants(
         2,
-        7,
-        8,
-        9,
-        203.906250,
+        6,
+        5,
+        11,
+        222.54,
         "Rear Left");
 
     public static final SwerveModuleConstants MOD_3_Constants = new SwerveModuleConstants(
         3,
+        8,
+        3,
         10,
-        11,
-        12,
-        155.214844,
+        257.17,
         "Rear Right");
   }
 

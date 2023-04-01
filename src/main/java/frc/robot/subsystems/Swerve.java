@@ -16,6 +16,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -52,9 +53,10 @@ public class Swerve extends SubsystemBase {
         /**
          *  Adding a Tab "Swerve" to the Shuffleboard to display Swerve data
          */
-        Shuffleboard.getTab("Swerve").add("navx", gyro).withSize(2, 2).withPosition(0, 0);
+        ShuffleboardTab swerveTab =  Shuffleboard.getTab("Swerve");
+        swerveTab.add("navx", gyro).withSize(2, 2).withPosition(0, 0);
         for (SwerveModule mod : mSwerveMods) {
-            Shuffleboard.getTab("Swerve").add(mod).withPosition((2 + mod.number), 0);
+            swerveTab.add("Swerve:"+mod.description, mod).withSize(2, 2).withPosition((1 + mod.number)*2, 0);
             // canCoderValues[mod.number] = Shuffleboard.getTab("Swerve")
             //         .add(mod.description + " Cancoder", mod.getCanCoderAngle().getDegrees())
             //         .withPosition((2 + mod.number), 0).getEntry();
@@ -232,12 +234,12 @@ public class Swerve extends SubsystemBase {
     @Override
     public void periodic() {
 
-        for (SwerveModule mod : mSwerveMods) {
-            canCoderValues[mod.number].setDouble(mod.getCanCoderAngle().getDegrees());
-            rotationValues[mod.number].setDouble(mod.getPosition().angle.getDegrees());
-            velocityValues[mod.number].setDouble(mod.getState().speedMetersPerSecond);
+        // for (SwerveModule mod : mSwerveMods) {
+        //     canCoderValues[mod.number].setDouble(mod.getCanCoderAngle().getDegrees());
+        //     rotationValues[mod.number].setDouble(mod.getPosition().angle.getDegrees());
+        //     velocityValues[mod.number].setDouble(mod.getState().speedMetersPerSecond);
             
-        }
+        // }
 
         SmartDashboard.putNumber("Pitch", this.getPitch());
 
