@@ -134,11 +134,11 @@ public class RobotContainer {
         }
 
         public void teleopInit() {
-
+                swerve.resetModulesToAbsolute();
         }
 
         public void autonomousInit() {
-
+                swerve.resetModulesToAbsolute();
         }
 
         public void disabledInit() {
