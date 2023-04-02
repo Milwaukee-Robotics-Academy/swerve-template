@@ -40,8 +40,6 @@ public class RobotContainer {
         private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
         private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
         private final JoystickButton slow = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
-        private final JoystickButton modAbsoluteOffSet = new JoystickButton(driver,
-                        XboxController.Button.kStart.value);
 
         /* Subsystems */
         private final Swerve swerve = new Swerve();
@@ -106,7 +104,6 @@ public class RobotContainer {
         private void configureButtonBindings() {
                 /* Driver Buttons */
                 zeroGyro.onTrue(new InstantCommand(() -> swerve.zeroHeading()));
-                modAbsoluteOffSet.onTrue(new InstantCommand(() -> swerve.resetModulesToAbsolute()));
         }
 
         public double getDesiredHeading() {
@@ -134,11 +131,11 @@ public class RobotContainer {
         }
 
         public void teleopInit() {
-                swerve.resetModulesToAbsolute();
+
         }
 
         public void autonomousInit() {
-                swerve.resetModulesToAbsolute();
+
         }
 
         public void disabledInit() {

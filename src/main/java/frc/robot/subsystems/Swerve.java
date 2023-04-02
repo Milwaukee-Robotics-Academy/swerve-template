@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -240,6 +241,9 @@ public class Swerve extends SubsystemBase {
         //     velocityValues[mod.number].setDouble(mod.getState().speedMetersPerSecond);
             
         // }
+        if (DriverStation.isDisabled()){
+            resetModulesToAbsolute();
+        }
 
         SmartDashboard.putNumber("Pitch", this.getPitch());
 
