@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
@@ -111,7 +112,7 @@ public class SwerveModule extends SubsystemBase {
     double angle = Math.abs(state.speedMetersPerSecond) <= Constants.Swerve.MAX_VELOCITY_METERS_PER_SECOND * 0.01
         ? lastAngle
         : state.angle.getRadians();
-
+SmartDashboard.putNumber(description+" Angle", angle);
     rotationController.setReference(angle, CANSparkMax.ControlType.kPosition);
     lastAngle = angle;
   }
@@ -271,7 +272,7 @@ public class SwerveModule extends SubsystemBase {
     builder.addDoubleProperty("Rotation", this::getIntegratedDegrees, null);
     builder.addDoubleProperty("Velocity", this::getVelocity, null);
     builder.addDoubleProperty("DriveTemp", this::getDriveMotorTemperature, null);
-
+    builder.addDoubleProperty("LastAngle", this::getDriveMotorTemperature, null);
     // builder.addDoubleProperty("VelocitySetpoint", this::getMeasurement, null);
 
     // builder.addDoubleProperty("Distance", this::getError, null);

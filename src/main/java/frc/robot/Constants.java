@@ -154,7 +154,7 @@ public class Constants {
         1,
         7,
         9,
-        121.37,
+        302.61,
         "Front Right");
 
     public static final SwerveModuleConstants MOD_2_Constants = new SwerveModuleConstants(
