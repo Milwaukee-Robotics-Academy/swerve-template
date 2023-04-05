@@ -16,6 +16,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,7 +33,9 @@ public class Swerve extends SubsystemBase {
     public GenericEntry[] canCoderValues;
     public GenericEntry[] rotationValues;
     public GenericEntry[] velocityValues;
-
+    private Timer timer;
+    private double previousTime;
+    
     private final AHRS gyro = new AHRS(SPI.Port.kMXP, (byte) 200);
 
     public Swerve() {
@@ -70,6 +73,9 @@ public class Swerve extends SubsystemBase {
         }
         swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.KINEMATICS, getYaw(), getModulePositions());
         setHeading(0);
+        timer = new Timer();
+        timer.start();
+        previousTime = timer.get();
     }
 
     /**
@@ -249,7 +255,8 @@ public class Swerve extends SubsystemBase {
 
         Logger.getInstance().recordOutput("Robot", (swerveOdometry.update(getYaw(), getModulePositions())));
         Logger.getInstance().recordOutput("SwerveStates", getModuleStates());
-
+        Logger.getInstance().recordOutput("LoopTime", timer.get() - previousTime);
+        previousTime = timer.get();
 
         SmartDashboard.putNumber("Yaw", getYaw().getDegrees());
 
