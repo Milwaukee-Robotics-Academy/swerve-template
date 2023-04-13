@@ -24,7 +24,7 @@ import frc.robot.Constants;
 /**
  * Class to represent and handle a swerve module
  * A module's state is measured by a CANCoder for the absolute position,
- * integrated NEO encoder for relative position
+ * integrated rotation NEO encoder for relative position
  * for both rotation and linear movement
  */
 public class SwerveModule extends SubsystemBase {
@@ -57,7 +57,7 @@ public class SwerveModule extends SubsystemBase {
   private final SimpleMotorFeedforward driveFeedforward;
 
   /**
-   * Used to keep an angle if not commanded to change it. 
+   * Used to keep an angle if not commanded to change it.
    */
   private double lastAngle;
 
@@ -112,7 +112,7 @@ public class SwerveModule extends SubsystemBase {
     double angle = Math.abs(state.speedMetersPerSecond) <= Constants.Swerve.MAX_VELOCITY_METERS_PER_SECOND * 0.01
         ? lastAngle
         : state.angle.getRadians();
-SmartDashboard.putNumber(description+" Angle", angle);
+    SmartDashboard.putNumber(description + " Angle", angle);
     rotationController.setReference(angle, CANSparkMax.ControlType.kPosition);
     lastAngle = angle;
   }
@@ -125,53 +125,34 @@ SmartDashboard.putNumber(description+" Angle", angle);
 
   /**
    * 
-   * @return The unsigned Angle of the Cancoder
+   * @return unsigned (0-360) angle of the Absolute (CANCoder)
    */
-  public Rotation2d getCanCoderAngle() {
-
-    double unsignedAngle = (Units.degreesToRadians(canCoder.getAbsolutePosition()))
-        % (2 * Math.PI);
-
-    return new Rotation2d(unsignedAngle);
-  }
-
   public double getCanCoderDegrees() {
 
     return canCoder.getAbsolutePosition();
   }
 
+  /**
+   * This used to set the encoder on the turn motor to be in sync with the
+   * absolute encoder.
+   * 
+   * @return the unsigned (0-360) minus the offset
+   */
   public Rotation2d getCanCoderWithOffset() {
 
     double unsignedAngle = (Units.degreesToRadians(canCoder.getAbsolutePosition()) - canCoderOffset.getRadians())
         % (2 * Math.PI);
 
     return new Rotation2d(unsignedAngle);
-
   }
-  /**
-   * 
-   * @return The unsigned Angle of the Integrated
-   */
-  public Rotation2d getIntegratedAngle() {
 
+  public double getRotationEncoderDegrees() {
     double unsignedAngle = rotationEncoder.getPosition() % (2 * Math.PI);
-
     if (unsignedAngle < 0)
       unsignedAngle += 2 * Math.PI;
-
-    return new Rotation2d(unsignedAngle);
-
+    return Rotation2d.fromRadians(unsignedAngle).getDegrees();
   }
 
-  public double getIntegratedDegrees() {
-    
-    double unsignedAngle = rotationEncoder.getPosition() % (2 * Math.PI);
-
-    if (unsignedAngle < 0)
-      unsignedAngle += 2 * Math.PI;
-
-    return  Rotation2d.fromRadians(unsignedAngle).getDegrees();
-  }
   /**
    * Provides the sensors in a standard ServeModulePosition object
    * 
@@ -192,13 +173,15 @@ SmartDashboard.putNumber(description+" Angle", angle);
   }
 
   /**
-   * Initialize the integrated NEO encoder to the offset (relative to home
+   * Initialize the integrated rotation NEO encoder to the offset (relative to
+   * home
    * position)
    * measured by the CANCoder
    */
   public void initRotationOffset() {
 
-    //rotationEncoder.setPosition(Units.degreesToRadians(canCoder.getAbsolutePosition() - canCoderOffsetDegrees));
+    // rotationEncoder.setPosition(Units.degreesToRadians(canCoder.getAbsolutePosition()
+    // - canCoderOffsetDegrees));
     rotationEncoder.setPosition(getCanCoderWithOffset().getRadians());
   }
 
@@ -269,7 +252,7 @@ SmartDashboard.putNumber(description+" Angle", angle);
   public void initSendable(SendableBuilder builder) {
     builder.setSmartDashboardType(this.description + " #" + this.number);
     builder.addDoubleProperty("CANCoder", this::getCanCoderDegrees, null);
-    builder.addDoubleProperty("Rotation", this::getIntegratedDegrees, null);
+    builder.addDoubleProperty("Rotation", this::getRotationEncoderDegrees, null);
     builder.addDoubleProperty("Velocity", this::getVelocity, null);
     builder.addDoubleProperty("DriveTemp", this::getDriveMotorTemperature, null);
     builder.addDoubleProperty("LastAngle", this::getDriveMotorTemperature, null);
