@@ -29,10 +29,6 @@ import frc.robot.Constants;
 public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
-    public GenericEntry[] canCoderValues;
-    public GenericEntry[] rotationValues;
-    public GenericEntry[] velocityValues;
-
     private final AHRS gyro = new AHRS(SPI.Port.kMXP, (byte) 200);
 
     public Swerve() {
@@ -44,12 +40,7 @@ public class Swerve extends SubsystemBase {
                 new SwerveModule(Constants.Swerve.MOD_3_Constants)
         };
 
-        /**
-         * These are entries for logging Module data
-         */
-        canCoderValues = new GenericEntry[4];
-        rotationValues = new GenericEntry[4];
-        velocityValues = new GenericEntry[4];
+
         
         /**
          *  Adding a Tab "Swerve" to the Shuffleboard to display Swerve data
@@ -58,15 +49,6 @@ public class Swerve extends SubsystemBase {
         swerveTab.add("navx", gyro).withSize(2, 2).withPosition(0, 0);
         for (SwerveModule mod : mSwerveMods) {
             swerveTab.add("Swerve:"+mod.description, mod).withSize(2, 2).withPosition((1 + mod.number)*2, 0);
-            // canCoderValues[mod.number] = Shuffleboard.getTab("Swerve")
-            //         .add(mod.description + " Cancoder", mod.getCanCoderAngle().getDegrees())
-            //         .withPosition((2 + mod.number), 0).getEntry();
-            // rotationValues[mod.number] = Shuffleboard.getTab("Swerve")
-            //         .add(mod.description + " Integrated", mod.getState().angle.getDegrees())
-            //         .withPosition((2 + mod.number), 1).getEntry();
-            // velocityValues[mod.number] = Shuffleboard.getTab("Swerve")
-            //         .add(mod.description + " Velocity", mod.getState().speedMetersPerSecond)
-            //         .withPosition((2 + mod.number), 2).getEntry();
         }
         swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.KINEMATICS, getYaw(), getModulePositions());
         setHeading(0);
@@ -130,7 +112,7 @@ public class Swerve extends SubsystemBase {
     /**
      * We keep track of the "pose" of the robot with the gyro, encoders (and vision data) This returns the current state
      * 
-     * @return {@link edu.wpi.first.math.geometry.Pose3d}
+     * @return {@link edu.wpi.first.math.geometry.Posed}
      */
     public Pose2d getPose() {
         return swerveOdometry.getPoseMeters();
@@ -235,12 +217,6 @@ public class Swerve extends SubsystemBase {
     @Override
     public void periodic() {
 
-        // for (SwerveModule mod : mSwerveMods) {
-        //     canCoderValues[mod.number].setDouble(mod.getCanCoderAngle().getDegrees());
-        //     rotationValues[mod.number].setDouble(mod.getPosition().angle.getDegrees());
-        //     velocityValues[mod.number].setDouble(mod.getState().speedMetersPerSecond);
-            
-        // }
         if (DriverStation.isDisabled()){
             resetModulesToAbsolute();
         }
