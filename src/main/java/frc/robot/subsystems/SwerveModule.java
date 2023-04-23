@@ -42,7 +42,7 @@ public class SwerveModule extends SubsystemBase {
 
   // absolute offset for the CANCoder so that the wheels can be aligned when the
   // robot is turned on
-  private final Rotation2d canCoderOffset;
+  private final double canCoderOffset;
 
   /**
    * PID Controllers to control the drive motor and rotation motors
@@ -82,7 +82,7 @@ public class SwerveModule extends SubsystemBase {
     rotationController = rotationMotor.getPIDController();
 
     canCoder = new CANCoder(constants.cancoderID);
-    canCoderOffset = Rotation2d.fromDegrees(constants.angleOffset);
+    canCoderOffset = Units.degreesToRadians(constants.angleOffset);
 
     configureDevices();
     lastAngle = getState().angle.getRadians();
@@ -136,21 +136,25 @@ public class SwerveModule extends SubsystemBase {
    * This used to set the encoder on the turn motor to be in sync with the
    * absolute encoder.
    * 
-   * @return the unsigned (0-360) minus the offset
+   * @return CANCoder minus the offset
    */
   public Rotation2d getCanCoderWithOffset() {
 
-    double unsignedAngle = (Units.degreesToRadians(canCoder.getAbsolutePosition()) - canCoderOffset.getRadians())
+    double unsignedAngle = (Units.degreesToRadians(canCoder.getAbsolutePosition()) - canCoderOffset)
         % (2 * Math.PI);
 
     return new Rotation2d(unsignedAngle);
   }
 
   public double getRotationEncoderDegrees() {
+
     double unsignedAngle = rotationEncoder.getPosition() % (2 * Math.PI);
+
     if (unsignedAngle < 0)
       unsignedAngle += 2 * Math.PI;
-    return Rotation2d.fromRadians(unsignedAngle).getDegrees();
+
+    return Units.radiansToDegrees(unsignedAngle);
+   
   }
 
   /**
@@ -223,14 +227,15 @@ public class SwerveModule extends SubsystemBase {
 
     rotationEncoder.setPositionConversionFactor(Constants.Swerve.ANGLE_ROTATIONS_TO_RADIANS);
     rotationEncoder.setVelocityConversionFactor(Constants.Swerve.ANGLE_RPM_TO_RADIANS_PER_SECOND);
-    rotationEncoder.setPosition(Units.degreesToRadians(canCoder.getAbsolutePosition() - canCoderOffset.getDegrees()));
+    rotationEncoder.setPosition(getCanCoderWithOffset().getRadians());
+
 
     // CanCoder configuration.
     CANCoderConfiguration canCoderConfiguration = new CANCoderConfiguration();
     canCoderConfiguration.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-    canCoderConfiguration.sensorDirection = Constants.Swerve.CANCODER_INVERSION;
-    canCoderConfiguration.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
-    canCoderConfiguration.sensorTimeBase = SensorTimeBase.PerSecond;
+    // canCoderConfiguration.sensorDirection = Constants.Swerve.CANCODER_INVERSION;
+    // canCoderConfiguration.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
+    // canCoderConfiguration.sensorTimeBase = SensorTimeBase.PerSecond;
 
     canCoder.configFactoryDefault();
     canCoder.configAllSettings(canCoderConfiguration);
