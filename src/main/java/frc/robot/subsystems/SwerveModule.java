@@ -176,6 +176,9 @@ public class SwerveModule extends SubsystemBase {
     return driveMotor.getMotorTemperature();
   }
 
+  public double getLastAngle() {
+    return Units.radiansToDegrees(lastAngle);
+  }
   /**
    * Initialize the integrated rotation NEO encoder to the offset (relative to
    * home
@@ -260,7 +263,7 @@ public class SwerveModule extends SubsystemBase {
     builder.addDoubleProperty("Rotation", this::getRotationEncoderDegrees, null);
     builder.addDoubleProperty("Velocity", this::getVelocity, null);
     builder.addDoubleProperty("DriveTemp", this::getDriveMotorTemperature, null);
-    builder.addDoubleProperty("LastAngle", this::getDriveMotorTemperature, null);
+    builder.addDoubleProperty("LastAngle", this::getLastAngle, null);
     // builder.addDoubleProperty("VelocitySetpoint", this::getMeasurement, null);
 
     // builder.addDoubleProperty("Distance", this::getError, null);
