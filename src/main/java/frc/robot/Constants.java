@@ -127,7 +127,7 @@ public class Constants {
      * As they turn counter clockwise (CCW) their values INCREASE positively.
      */
     public static final boolean DRIVE_MOTOR_INVERSION = true; // TODO: validate Drive Motor Inversion
-    public static final boolean ANGLE_MOTOR_INVERSION = false; // TODO: validate Angle Motor Inversion
+    public static final boolean ANGLE_MOTOR_INVERSION = true; // TODO: validate Angle Motor Inversion
     public static final boolean CANCODER_INVERSION = false; // TODO: validate CANCoder Inversion
 
     /** Idle modes. */

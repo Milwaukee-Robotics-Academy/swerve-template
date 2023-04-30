@@ -190,7 +190,10 @@ public class SwerveModule extends SubsystemBase {
     // rotationEncoder.setPosition(Units.degreesToRadians(canCoder.getAbsolutePosition()
     // - canCoderOffsetDegrees));
     rotationEncoder.setPosition(getCanCoderWithOffset().getRadians());
+    System.out.println(this.description+" "+getCanCoderWithOffset().getRadians());
   }
+
+
 
   /**
    * The method used to set up the SparkMaxs and the Cancoders initially
