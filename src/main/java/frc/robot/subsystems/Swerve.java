@@ -1,9 +1,17 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.littletonrobotics.junction.Logger;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.RamseteAutoBuilder;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.pathplanner.lib.commands.PPRamseteCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -19,6 +27,7 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -236,5 +245,34 @@ public class Swerve extends SubsystemBase {
     @Override
     public void initSendable(SendableBuilder builder) {
     }
-        
+    public Command followTrajectoryCommand(ArrayList<PathPlannerTrajectory> path, HashMap<String, Command> eventMap,
+    boolean isFirstPath) {
+  SmartDashboard.putNumber("intial Pose rotation", path.get(0).getInitialPose().getRotation().getDegrees());
+//   m_field.getObject("traj").setTrajectory(path.get(0));
+
+  // Create the AutoBuilder. This only needs to be created once when robot code
+  // starts, not every time you want to create an auto command. A good place to
+  // put this is in RobotContainer along with your subsystems.
+  SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+      this::getPose, // Pose2d supplier
+      this::resetOdometry, // Pose2d consumer, used to reset odometry at the beginning of auto
+      Constants.Swerve.KINEMATICS,
+      new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y PID controllers)
+    new PIDConstants(0.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
+    this::setModuleStates,
+    eventMap,
+      true, // Should the path be automatically mirrored depending on alliance color.
+            // Optional, defaults to true
+      this // Requires this drive subsystem
+  );
+  return autoBuilder.fullAuto(path);
+  // return new SequentialCommandGroup(
+  // new InstantCommand(() -> {
+  // // Reset odometry for the first path you run during auto
+  // if (isFirstPath) {
+  // this.resetOdometry(path[0].getInitialPose());
+  // }
+  // }),
+  // autoBuilder.fullAuto(path));
+}
     }
