@@ -1,6 +1,12 @@
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -13,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.autos.DriveSegment;
 import frc.robot.commands.Drive;
@@ -42,16 +49,19 @@ public class RobotContainer {
         private final JoystickButton slow = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
 
         /* Subsystems */
-        private final Swerve swerve = new Swerve();
+        private final Swerve m_swerve = new Swerve();
         SendableChooser<Command> autoChooser = new SendableChooser<>();
+
+        private ArrayList<PathPlannerTrajectory> autoPathGroup;
+        private HashMap<String, Command> eventMap;
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
          */
         public RobotContainer() {
-                swerve.setDefaultCommand(
+                m_swerve.setDefaultCommand(
                                 new Drive(
-                                                swerve,
+                                                m_swerve,
                                                 () -> -driver.getRawAxis(translationAxis),
                                                 () -> -driver.getRawAxis(strafeAxis),
                                                 () -> -driver.getRawAxis(rotationAxis),
@@ -73,7 +83,7 @@ public class RobotContainer {
                 autoChooser.setDefaultOption("Do nothing", new InstantCommand());
                 updateAutoChoices();
                 SmartDashboard.putData(CommandScheduler.getInstance());
-                SmartDashboard.putData(swerve);
+                SmartDashboard.putData(m_swerve);
                 Shuffleboard.getTab("Autonomous").add(autoChooser).withSize(2, 1);
 
         }
@@ -103,7 +113,7 @@ public class RobotContainer {
          */
         private void configureButtonBindings() {
                 /* Driver Buttons */
-                zeroGyro.onTrue(new InstantCommand(() -> swerve.zeroHeading()));
+                zeroGyro.onTrue(new InstantCommand(() -> m_swerve.zeroHeading()));
         }
 
         public double getDesiredHeading() {
@@ -135,6 +145,15 @@ public class RobotContainer {
         }
 
         public void autonomousInit() {
+              //  m_swerve.setBrakeMode(true);
+                // This will load the file "Example Path.path" and generate it with a max
+                     autoPathGroup =  (ArrayList<PathPlannerTrajectory>) PathPlanner.loadPathGroup("ReversePath", true, new PathConstraints(3, 2));
+                     // This is just an example event map. It would be better to have a constant,
+                     // global event map
+                     // in your code that will be used by all path following commands.
+                     eventMap = new HashMap<>();
+                     eventMap.put("marker1", new PrintCommand("Passed marker 1"));
+                     eventMap.put("intakeOut", new PrintCommand("IntakeOut"));
 
         }
 
@@ -146,7 +165,7 @@ public class RobotContainer {
                 /**
                  * Add potential autos to the chooser
                  */
-                autoChooser.addOption("Drive for 1 meter", (new DriveSegment(swerve,
+                autoChooser.addOption("Drive for 1 meter", (new DriveSegment(m_swerve,
                                 List.of(
                                                 new Translation2d(0, 0),
                                                 new Translation2d(1, 0)),
