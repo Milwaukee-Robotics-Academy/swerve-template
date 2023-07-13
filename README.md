@@ -7,6 +7,11 @@ This code was designed for the Swerve Drive Specialties MK4 and MK4i modules usi
 
 We learned (and copied) a LOT from Team364's [BaseFalconSwerve](https://github.com/Team364/BaseFalconSwerve)
 
+Other code we learned from:
+[Team 3512](https://github.com/frc3512/Robot-2023)
+[Team 7461 SushiSquad](https://github.com/SushiSquad7461/BasedNeoSwerve)
+[BronzBots - YAGSL](https://github.com/BroncBotz3481/YAGSL-Example)
+
 ## Setting Constants
 All the settings that you need to change for SURE are set in the TODOs. Make sure you address all of the TODOs in order to use properly with your robot.
 
