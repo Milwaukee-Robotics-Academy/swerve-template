@@ -120,7 +120,7 @@ public class Constants {
      * TODO: Confirm actual max velocity
      */
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 4.42; // TODO: Set Max Velocity according to Robot
-    public static final double MAX_ANGULAR_RADIANS_PER_SECOND = 4.0;
+    public static final double MAX_ANGULAR_RADIANS_PER_SECOND = 2.0;
 
     /** Inversions.
      * `CANCoder and Angle Motor should both must be set such that they are Counter Clockwise positve (CCW+).
