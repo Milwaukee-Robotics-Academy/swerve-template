@@ -172,6 +172,8 @@ public class Constants {
         10,
         257.2559,
         "Rear Right");
+
+    public static final boolean DRIFT_CORRECTION = false;    
   }
 
   public static class AutoConstants {

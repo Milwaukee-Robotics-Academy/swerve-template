@@ -56,36 +56,37 @@ public class Drive extends CommandBase {
                 strafeVal * Constants.Swerve.MAX_VELOCITY_METERS_PER_SECOND * m_speedReduction.getAsDouble(),
                 rotationVal * Constants.Swerve.MAX_ANGULAR_RADIANS_PER_SECOND * m_speedReduction.getAsDouble(),
                 s_Swerve.getYaw());
-
-        // if d-pad desired heading is commanded, then rotate to that
-        if (Math.abs(commandedHeading) < 181) {
-            if (driftCorrectionPID.atSetpoint()) {
-                commandedHeading = 999;
-                driftCorrectionPID.reset();
-            } else {
-                speeds.omegaRadiansPerSecond += driftCorrectionPID.calculate(
-                        s_Swerve.getYaw().getDegrees(),
-                        commandedHeading);
-                // keep the desired heading set to our current heading
-                desiredHeading = s_Swerve.getYaw().getDegrees();
-            }
-
-        } else { // no dpad, just correct for drift
-            if (Math.abs(speeds.omegaRadiansPerSecond) > 0.0) {
-                // we are turning, so set the desired and the current the same
-                desiredHeading = s_Swerve.getYaw().getDegrees();
-            }
-            if ((Math.abs(translationVal) + Math.abs(strafeVal)) > 0) {
-                // we are moving x or y, but should not be moving theta so add drift correction
+        if (Constants.Swerve.DRIFT_CORRECTION) {
+            // if d-pad desired heading is commanded, then rotate to that
+            if (Math.abs(commandedHeading) < 181) {
                 if (driftCorrectionPID.atSetpoint()) {
+                    commandedHeading = 999;
                     driftCorrectionPID.reset();
                 } else {
                     speeds.omegaRadiansPerSecond += driftCorrectionPID.calculate(
                             s_Swerve.getYaw().getDegrees(),
-                            desiredHeading);
+                            commandedHeading);
+                    // keep the desired heading set to our current heading
+                    desiredHeading = s_Swerve.getYaw().getDegrees();
                 }
-            } else {
-                desiredHeading = s_Swerve.getYaw().getDegrees();
+
+            } else { // no dpad, just correct for drift
+                if (Math.abs(speeds.omegaRadiansPerSecond) > 0.0) {
+                    // we are turning, so set the desired and the current the same
+                    desiredHeading = s_Swerve.getYaw().getDegrees();
+                }
+                if ((Math.abs(translationVal) + Math.abs(strafeVal)) > 0) {
+                    // we are moving x or y, but should not be moving theta so add drift correction
+                    if (driftCorrectionPID.atSetpoint()) {
+                        driftCorrectionPID.reset();
+                    } else {
+                        speeds.omegaRadiansPerSecond += driftCorrectionPID.calculate(
+                                s_Swerve.getYaw().getDegrees(),
+                                desiredHeading);
+                    }
+                } else {
+                    desiredHeading = s_Swerve.getYaw().getDegrees();
+                }
             }
         }
 
