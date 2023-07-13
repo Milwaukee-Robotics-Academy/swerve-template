@@ -18,15 +18,13 @@ public class Drive extends CommandBase {
     private DoubleSupplier suppliedHeading;
     private DoubleSupplier m_speedReduction;
     private PIDController driftCorrectionPID = new PIDController(0.09, 0.00, 0.00, 0.04);
-    private double desiredHeading = 0;
-    private double commandedHeading;
+    private double previousHeading = 0;
 
-    public Drive(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup,
-            DoubleSupplier commandedHeading, DoubleSupplier speedReduction, BooleanSupplier robotCentricSup) {
+
+    public Drive(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, DoubleSupplier speedReduction, BooleanSupplier robotCentricSup) {
         this.s_Swerve = s_Swerve;
         addRequirements(s_Swerve);
 
-        this.suppliedHeading = commandedHeading;
         this.translationSup = translationSup;
         this.strafeSup = strafeSup;
         this.rotationSup = rotationSup;
@@ -36,7 +34,7 @@ public class Drive extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        desiredHeading = s_Swerve.getYaw().getDegrees();
+  //      desiredHeading = s_Swerve.getYaw().getDegrees();
         driftCorrectionPID.enableContinuousInput(-180, 180);
         driftCorrectionPID.setTolerance(10, 10);
     }
@@ -48,51 +46,33 @@ public class Drive extends CommandBase {
         double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.Controls.AXIS_DEADZONE);
         double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.Controls.AXIS_DEADZONE);
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.Controls.AXIS_DEADZONE);
-        if (Math.abs(this.suppliedHeading.getAsDouble()) < 181)
-            commandedHeading = this.suppliedHeading.getAsDouble();
 
         ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                 translationVal * Constants.Swerve.MAX_VELOCITY_METERS_PER_SECOND * m_speedReduction.getAsDouble(),
                 strafeVal * Constants.Swerve.MAX_VELOCITY_METERS_PER_SECOND * m_speedReduction.getAsDouble(),
                 rotationVal * Constants.Swerve.MAX_ANGULAR_RADIANS_PER_SECOND * m_speedReduction.getAsDouble(),
                 s_Swerve.getYaw());
-        if (Constants.Swerve.DRIFT_CORRECTION) {
-            // if d-pad desired heading is commanded, then rotate to that
-            if (Math.abs(commandedHeading) < 181) {
-                if (driftCorrectionPID.atSetpoint()) {
-                    commandedHeading = 999;
-                    driftCorrectionPID.reset();
-                } else {
-                    speeds.omegaRadiansPerSecond += driftCorrectionPID.calculate(
-                            s_Swerve.getYaw().getDegrees(),
-                            commandedHeading);
-                    // keep the desired heading set to our current heading
-                    desiredHeading = s_Swerve.getYaw().getDegrees();
-                }
 
-            } else { // no dpad, just correct for drift
-                if (Math.abs(speeds.omegaRadiansPerSecond) > 0.0) {
-                    // we are turning, so set the desired and the current the same
-                    desiredHeading = s_Swerve.getYaw().getDegrees();
-                }
-                if ((Math.abs(translationVal) + Math.abs(strafeVal)) > 0) {
-                    // we are moving x or y, but should not be moving theta so add drift correction
-                    if (driftCorrectionPID.atSetpoint()) {
-                        driftCorrectionPID.reset();
-                    } else {
-                        speeds.omegaRadiansPerSecond += driftCorrectionPID.calculate(
-                                s_Swerve.getYaw().getDegrees(),
-                                desiredHeading);
-                    }
-                } else {
-                    desiredHeading = s_Swerve.getYaw().getDegrees();
-                }
-            }
+
+        if (Constants.Swerve.DRIFT_CORRECTION) {
+            speeds.omegaRadiansPerSecond += driftCorrection(speeds);
         }
 
         /* Drive */
         s_Swerve.drive(speeds);
 
+    }
+
+    public double driftCorrection(ChassisSpeeds speeds){
+        double desiredHeading = s_Swerve.getPose().getRotation().getDegrees();
+        double correction = 0;
+        double translationSpeeds = Math.abs(speeds.vxMetersPerSecond) + Math.abs(speeds.vyMetersPerSecond);
+        
+        if(Math.abs(speeds.omegaRadiansPerSecond) <= 0.0 && translationSpeeds >= 0) {
+            correction = driftCorrectionPID.calculate( desiredHeading, previousHeading);
+        } 
+        previousHeading = desiredHeading;
+        return correction;
     }
 
     @Override
