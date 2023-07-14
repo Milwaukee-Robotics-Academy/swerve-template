@@ -134,8 +134,8 @@ public class RobotContainer {
          * @return the command to run in autonomous
          */
         public Command getAutonomousCommand() {
-                // Command Selected from Shuffleboard
-                return autoChooser.getSelected();
+        // Run path following command, then stop at the end.
+        return m_swerve.followTrajectoryCommand(autoPathGroup, eventMap, true);
 
         }
 
