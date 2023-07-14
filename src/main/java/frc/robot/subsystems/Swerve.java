@@ -48,23 +48,24 @@ public class Swerve extends SubsystemBase {
                 new SwerveModule(Constants.Swerve.MOD_3_Constants)
         };
 
-
-        
         /**
-         *  Adding a Tab "Swerve" to the Shuffleboard to display Swerve data
+         * Adding a Tab "Swerve" to the Shuffleboard to display Swerve data
          */
-        ShuffleboardTab swerveTab =  Shuffleboard.getTab("Swerve");
+        ShuffleboardTab swerveTab = Shuffleboard.getTab("Swerve");
         swerveTab.add("navx", gyro).withSize(2, 2).withPosition(0, 0);
         for (SwerveModule mod : mSwerveMods) {
-            swerveTab.add("Swerve:"+mod.description, mod).withSize(2, 2).withPosition((1 + mod.number)*2, 0);
+            swerveTab.add("Swerve:" + mod.description, mod).withSize(2, 2).withPosition((1 + mod.number) * 2, 0);
         }
         swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.KINEMATICS, getYaw(), getModulePositions());
         setHeading(0);
     }
 
     /**
-     * This is the method that takes {@link edu.wpi.first.math.kinematics.ChassisSpeeds} and sends to each of the modules
-     * It is used by the default command {@link frc.robot.commands.Drive} to drive the drivetrain
+     * This is the method that takes
+     * {@link edu.wpi.first.math.kinematics.ChassisSpeeds} and sends to each of the
+     * modules
+     * It is used by the default command {@link frc.robot.commands.RotateToHeading} to drive
+     * the drivetrain
      */
     public void drive(ChassisSpeeds speeds) {
         SwerveModuleState[] states = Constants.Swerve.KINEMATICS.toSwerveModuleStates(speeds);
@@ -74,7 +75,9 @@ public class Swerve extends SubsystemBase {
     }
 
     /**
-     * Not sure if this is needed any more. Another way to pass in data on how to drive the drivetrain
+     * Not sure if this is needed any more. Another way to pass in data on how to
+     * drive the drivetrain
+     * 
      * @param translation
      * @param rotation
      * @param fieldRelative
@@ -107,7 +110,8 @@ public class Swerve extends SubsystemBase {
     }
 
     /**
-     * Once the speeds are converted into {@link edu.wpi.first.math.kinematics.SwerveModuleState} they are passed
+     * Once the speeds are converted into
+     * {@link edu.wpi.first.math.kinematics.SwerveModuleState} they are passed
      * to each module.
      * 
      * Used by SwerveControllerCommand in Auto
@@ -117,7 +121,8 @@ public class Swerve extends SubsystemBase {
     }
 
     /**
-     * We keep track of the "pose" of the robot with the gyro, encoders (and vision data) This returns the current state
+     * We keep track of the "pose" of the robot with the gyro, encoders (and vision
+     * data) This returns the current state
      * 
      * @return {@link edu.wpi.first.math.geometry.Posed}
      */
@@ -126,26 +131,31 @@ public class Swerve extends SubsystemBase {
     }
 
     /**
-     *  This method returns a helper {@link edu.wpi.first.math.kinematics.SwerveDriveKinematics} This takes info about our robot
-     * and uses it to turn desired chassis velocities into desired states for each module
+     * This method returns a helper
+     * {@link edu.wpi.first.math.kinematics.SwerveDriveKinematics} This takes info
+     * about our robot
+     * and uses it to turn desired chassis velocities into desired states for each
+     * module
+     * 
      * @return
      */
     public SwerveDriveKinematics getKinematics() {
         return Constants.Swerve.KINEMATICS;
     }
 
-   /**
-    *  resets our robots position on the field.
-    * @param pose
-    */
+    /**
+     * resets our robots position on the field.
+     * 
+     * @param pose
+     */
     public void resetOdometry(Pose2d pose) {
         swerveOdometry.resetPosition(getYaw(), getModulePositions(), pose);
     }
 
-   /**
-    * 
-    * @return The module states for each module
-    */
+    /**
+     * 
+     * @return The module states for each module
+     */
     public SwerveModuleState[] getModuleStates() {
         SwerveModuleState[] states = new SwerveModuleState[4];
         for (SwerveModule mod : mSwerveMods) {
@@ -155,7 +165,7 @@ public class Swerve extends SubsystemBase {
     }
 
     /**
-     *  
+     * 
      * @return the module positions
      */
     public SwerveModulePosition[] getModulePositions() {
@@ -167,7 +177,8 @@ public class Swerve extends SubsystemBase {
     }
 
     /**
-     *  Set the Gyro heading to Zero. Used for when the robot is facing directly away from driverstation
+     * Set the Gyro heading to Zero. Used for when the robot is facing directly away
+     * from driverstation
      */
     public void zeroHeading() {
         gyro.zeroYaw();
@@ -176,6 +187,7 @@ public class Swerve extends SubsystemBase {
 
     /**
      * Set the heading of the robot to the param passed in
+     * 
      * @param heading
      */
     public void setHeading(double heading) {
@@ -209,7 +221,8 @@ public class Swerve extends SubsystemBase {
     }
 
     /**
-     * Used to set the turn motor encoder = Cancoder + offset. This may need to be done
+     * Used to set the turn motor encoder = Cancoder + offset. This may need to be
+     * done
      * more freqently than on startup. Perhaps AutonomousInit and TeleopInit
      */
     public void resetModulesToAbsolute() {
@@ -224,7 +237,7 @@ public class Swerve extends SubsystemBase {
     @Override
     public void periodic() {
 
-        if (DriverStation.isDisabled()){
+        if (DriverStation.isDisabled()) {
             resetModulesToAbsolute();
         }
 
@@ -232,7 +245,6 @@ public class Swerve extends SubsystemBase {
 
         Logger.getInstance().recordOutput("Robot", (swerveOdometry.update(getYaw(), getModulePositions())));
         Logger.getInstance().recordOutput("SwerveStates", getModuleStates());
-
 
         SmartDashboard.putNumber("Yaw", getYaw().getDegrees());
 
@@ -243,34 +255,29 @@ public class Swerve extends SubsystemBase {
     @Override
     public void initSendable(SendableBuilder builder) {
     }
-    public Command followTrajectoryCommand(ArrayList<PathPlannerTrajectory> path, HashMap<String, Command> eventMap,
-    boolean isFirstPath) {
-  SmartDashboard.putNumber("intial Pose rotation", path.get(0).getInitialPose().getRotation().getDegrees());
-//   m_field.getObject("traj").setTrajectory(path.get(0));
 
-  // Create the AutoBuilder. This only needs to be created once when robot code
-  // starts, not every time you want to create an auto command. A good place to
-  // put this is in RobotContainer along with your subsystems.
-  SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
-      this::getPose, // Pose2d supplier
-      this::resetOdometry, // Pose2d consumer, used to reset odometry at the beginning of auto
-      Constants.Swerve.KINEMATICS,
-      new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y PID controllers)
-    new PIDConstants(0.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
-    this::setModuleStates,
-    eventMap,
-      true, // Should the path be automatically mirrored depending on alliance color.
-            // Optional, defaults to true
-      this // Requires this drive subsystem
-  );
-  return autoBuilder.fullAuto(path);
-  // return new SequentialCommandGroup(
-  // new InstantCommand(() -> {
-  // // Reset odometry for the first path you run during auto
-  // if (isFirstPath) {
-  // this.resetOdometry(path[0].getInitialPose());
-  // }
-  // }),
-  // autoBuilder.fullAuto(path));
-}
+    public Command followTrajectoryCommand(ArrayList<PathPlannerTrajectory> path, HashMap<String, Command> eventMap,
+            boolean isFirstPath) {
+        SmartDashboard.putNumber("intial Pose rotation", path.get(0).getInitialPose().getRotation().getDegrees());
+        // m_field.getObject("traj").setTrajectory(path.get(0));
+
+        // Create the AutoBuilder. This only needs to be created once when robot code
+        // starts, not every time you want to create an auto command. A good place to
+        // put this is in RobotContainer along with your subsystems.
+        SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+                this::getPose, // Pose2d supplier
+                this::resetOdometry, // Pose2d consumer, used to reset odometry at the beginning of auto
+                Constants.Swerve.KINEMATICS,
+                new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X
+                                                 // and Y PID controllers)
+                new PIDConstants(0.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the
+                                                 // rotation controller)
+                this::setModuleStates,
+                eventMap,
+                true, // Should the path be automatically mirrored depending on alliance color.
+                      // Optional, defaults to true
+                this // Requires this drive subsystem
+        );
+        return autoBuilder.fullAuto(path);
     }
+}

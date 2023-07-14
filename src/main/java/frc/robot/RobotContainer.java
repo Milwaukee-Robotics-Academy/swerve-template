@@ -21,8 +21,10 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.autos.DriveSegment;
 import frc.robot.commands.Drive;
+import frc.robot.commands.RotateToHeading;
 import frc.robot.subsystems.Swerve;
 
 /**
@@ -47,6 +49,10 @@ public class RobotContainer {
         private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
         private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
         private final JoystickButton slow = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+        public final POVButton driverUP;
+        public final POVButton driverDOWN;
+        public final POVButton driverLEFT;
+        public final POVButton driverRIGHT;
 
         /* Subsystems */
         private final Swerve m_swerve = new Swerve();
@@ -65,21 +71,47 @@ public class RobotContainer {
                                                 () -> -driver.getRawAxis(translationAxis),
                                                 () -> -driver.getRawAxis(strafeAxis),
                                                 () -> -driver.getRawAxis(rotationAxis),
-                                                () -> getDesiredHeading(),
                                                 () -> speedReduction(),
                                                 () -> robotCentric.getAsBoolean()));
 
-                // driverUP = new POVButton(driver, 0);
-                // driverRIGHT = new POVButton(driver, 90);
-                // driverDOWN = new POVButton(driver, 180);
-                // driverLEFT = new POVButton(driver, 270);
+                driverUP = new POVButton(driver, 0);
+                driverRIGHT = new POVButton(driver, 90);
+                driverDOWN = new POVButton(driver, 180);
+                driverLEFT = new POVButton(driver, 270);
                 // operatorUP = new POVButton(operator, 0);
                 // operatorRIGHT = new POVButton(operator, 90);
                 // operatorDOWN = new POVButton(operator, 180);
                 // operatorLEFT = new POVButton(operator, 270);
                 // Configure the button bindings
                 configureButtonBindings();
-
+                driverUP.whileTrue(new RotateToHeading(
+                                m_swerve,
+                                () -> -driver.getRawAxis(translationAxis),
+                                () -> -driver.getRawAxis(strafeAxis),
+                                0.0,
+                                () -> speedReduction(),
+                                () -> robotCentric.getAsBoolean()));
+                driverDOWN.whileTrue(new RotateToHeading(
+                                m_swerve,
+                                () -> -driver.getRawAxis(translationAxis),
+                                () -> -driver.getRawAxis(strafeAxis),
+                                180.0,
+                                () -> speedReduction(),
+                                () -> robotCentric.getAsBoolean()));
+                driverLEFT.whileTrue(new RotateToHeading(
+                                        m_swerve,
+                                        () -> -driver.getRawAxis(translationAxis),
+                                        () -> -driver.getRawAxis(strafeAxis),
+                                        90.0,
+                                        () -> speedReduction(),
+                                        () -> robotCentric.getAsBoolean()));
+                driverRIGHT.whileTrue(new RotateToHeading(
+                                        m_swerve,
+                                        () -> -driver.getRawAxis(translationAxis),
+                                        () -> -driver.getRawAxis(strafeAxis),
+                                        -90.0,
+                                        () -> speedReduction(),
+                                        () -> robotCentric.getAsBoolean()));
                 autoChooser.setDefaultOption("Do nothing", new InstantCommand());
                 updateAutoChoices();
                 SmartDashboard.putData(CommandScheduler.getInstance());
@@ -116,19 +148,6 @@ public class RobotContainer {
                 zeroGyro.onTrue(new InstantCommand(() -> m_swerve.zeroHeading()));
         }
 
-        public double getDesiredHeading() {
-                // if (driverUP.getAsBoolean() || operatorUP.getAsBoolean()) {
-                // return 0.0;
-                // } else if (driverRIGHT.getAsBoolean() || operatorRIGHT.getAsBoolean()) {
-                // return -90.0;
-                // } else if (driverDOWN.getAsBoolean() || operatorDOWN.getAsBoolean()) {
-                // return 180.0;
-                // } else if (driverLEFT.getAsBoolean() || operatorLEFT.getAsBoolean()) {
-                // return 90.0;
-                // } else
-                return 999;
-        }
-
         /**
          * Use this to pass the autonomous command to the main {@link Robot} class.
          *
@@ -145,15 +164,16 @@ public class RobotContainer {
         }
 
         public void autonomousInit() {
-              //  m_swerve.setBrakeMode(true);
+                // m_swerve.setBrakeMode(true);
                 // This will load the file "Example Path.path" and generate it with a max
-                     autoPathGroup =  (ArrayList<PathPlannerTrajectory>) PathPlanner.loadPathGroup("ReversePath", true, new PathConstraints(3, 2));
-                     // This is just an example event map. It would be better to have a constant,
-                     // global event map
-                     // in your code that will be used by all path following commands.
-                     eventMap = new HashMap<>();
-                     eventMap.put("marker1", new PrintCommand("Passed marker 1"));
-                     eventMap.put("intakeOut", new PrintCommand("IntakeOut"));
+                autoPathGroup = (ArrayList<PathPlannerTrajectory>) PathPlanner.loadPathGroup("ReversePath", true,
+                                new PathConstraints(3, 2));
+                // This is just an example event map. It would be better to have a constant,
+                // global event map
+                // in your code that will be used by all path following commands.
+                eventMap = new HashMap<>();
+                eventMap.put("marker1", new PrintCommand("Passed marker 1"));
+                eventMap.put("intakeOut", new PrintCommand("IntakeOut"));
 
         }
 
