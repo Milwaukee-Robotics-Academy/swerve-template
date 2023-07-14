@@ -20,7 +20,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
@@ -95,12 +94,15 @@ public class Swerve extends SubsystemBase {
                                 translation.getX(),
                                 translation.getY(),
                                 rotation));
+        setModuleStates(swerveModuleStates, isOpenLoop);
 
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates,
-                Constants.Swerve.MAX_VELOCITY_METERS_PER_SECOND);
+    }
+
+    private void setModuleStates(SwerveModuleState[] desiredStates, boolean isOpenLoop) {
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.MAX_VELOCITY_METERS_PER_SECOND);
 
         for (SwerveModule mod : mSwerveMods) {
-            mod.setState(swerveModuleStates[mod.number], isOpenLoop);
+            mod.setState(desiredStates[mod.number], isOpenLoop);
         }
     }
 
@@ -111,11 +113,7 @@ public class Swerve extends SubsystemBase {
      * Used by SwerveControllerCommand in Auto
      */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.MAX_VELOCITY_METERS_PER_SECOND);
-
-        for (SwerveModule mod : mSwerveMods) {
-            mod.setState(desiredStates[mod.number], false);
-        }
+        setModuleStates(desiredStates, false);
     }
 
     /**
