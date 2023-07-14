@@ -15,10 +15,8 @@ public class RotateToHeading extends CommandBase {
     private DoubleSupplier translationSup;
     private DoubleSupplier strafeSup;
     private double rotation;
-    private DoubleSupplier suppliedHeading;
     private DoubleSupplier m_speedReduction;
     private PIDController headingCorrectionPID = new PIDController(0.09, 0.00, 0.00, 0.04);
-    private double previousHeading = 0;
 
 
     public RotateToHeading(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, double heading, DoubleSupplier speedReduction, BooleanSupplier robotCentricSup) {
