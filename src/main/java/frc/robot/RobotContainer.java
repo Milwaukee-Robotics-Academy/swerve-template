@@ -65,7 +65,6 @@ public class RobotContainer {
                                                 () -> -driver.getRawAxis(translationAxis),
                                                 () -> -driver.getRawAxis(strafeAxis),
                                                 () -> -driver.getRawAxis(rotationAxis),
-                                                () -> getDesiredHeading(),
                                                 () -> speedReduction(),
                                                 () -> robotCentric.getAsBoolean()));
 
